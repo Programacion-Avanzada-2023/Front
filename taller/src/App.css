@@ -1,0 +1,12 @@
+body{
+  background: url("C:\Users\Usuario\Downloads\taller dif.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+ 
+}
+
+.d-block {
+  width: 500px;
+  height: 600px;
+}
+
