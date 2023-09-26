@@ -1,8 +1,7 @@
 body{
-  background: url("C:\Users\Usuario\Downloads\taller dif.jpg");
   background-repeat: no-repeat;
   background-size: cover;
- 
+  background-image: url("../public/img/taller_santosCustom.png");
 }
 
 .d-block {
