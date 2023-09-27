@@ -1,2 +1,6 @@
 # Front
-desarrollo frontend React
+desarrollo frontend del ABM del taller mecanico utilizando la tecnologia React
+
+Encargados del desarrollo:
+-Nicolas Mairone
+-Santiago Pedraza
