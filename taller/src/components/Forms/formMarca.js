@@ -19,28 +19,29 @@ export function FormMarca() {
   };
 
   return (
-    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+    <Form noValidate validated={validated} onSubmit={handleSubmit} className="Forms"> 
       <Row className="mb-3">
         <Form.Group as={Col} md="4" controlId="validationCustom01">
-          <Form.Label>First name</Form.Label>
+          <Form.Label className="custom-label">Nombre</Form.Label>
           <Form.Control
             required
             type="text"
-            placeholder="First name"
-            defaultValue="Mark"
+            placeholder="Introduzca nombre de la marca"
+            defaultValue=""
           />
-          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          <Form.Control.Feedback></Form.Control.Feedback>
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom02">
-          <Form.Label>Last name</Form.Label>
+          <Form.Label className="custom-label">Origen</Form.Label>
           <Form.Control
             required
             type="text"
-            placeholder="Last name"
-            defaultValue="Otto"
+            placeholder="Introduzca pais de origen de la marca"
+            defaultValue=""
           />
-          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          <Form.Control.Feedback></Form.Control.Feedback>
         </Form.Group>
+        {/* 
         <Form.Group as={Col} md="4" controlId="validationCustomUsername">
           <Form.Label>Username</Form.Label>
           <InputGroup hasValidation>
@@ -56,7 +57,9 @@ export function FormMarca() {
             </Form.Control.Feedback>
           </InputGroup>
         </Form.Group>
+        */}
       </Row>
+      {/* 
       <Row className="mb-3">
         <Form.Group as={Col} md="6" controlId="validationCustom03">
           <Form.Label>City</Form.Label>
@@ -79,16 +82,34 @@ export function FormMarca() {
             Please provide a valid zip.
           </Form.Control.Feedback>
         </Form.Group>
+        
       </Row>
+      */}
       <Form.Group className="mb-3">
         <Form.Check
           required
-          label="Agree to terms and conditions"
-          feedback="You must agree before submitting."
+          label={<span style={{ color: 'black' }}>Aceptar terminos y condiciones</span>}
+          feedback="Debes estar de acuerdo antes de registrar una marca"
           feedbackType="invalid"
         />
       </Form.Group>
-      <Button type="submit">Submit form</Button>
+      <Row className="div-buttons">
+        <Col className="custom-col">
+          <Button type="submit">Insertar Marca</Button>
+        </Col>
+
+        <Col className="custom-col">
+          <Button type="submit">Guardar Cambios</Button>
+        </Col>
+        
+        <Col className="custom-col">
+          <Button type="submit">Eliminar Marca</Button>
+        </Col>  
+
+        <Col className="custom-col">
+          <Button type="submit">Listar Marcas</Button>
+        </Col>
+      </Row>
     </Form>
   );
 }
