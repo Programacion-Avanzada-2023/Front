@@ -3,7 +3,7 @@ import Carousel from 'react-bootstrap/Carousel';
 function Home() {
   return (
     <Carousel data-bs-theme="dark">
-      <Carousel.Item>
+      <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
           src="https://www.vilpazautomocion.es/images/servicios-taller-mecanico-pontevedra.jpg"
@@ -14,7 +14,7 @@ function Home() {
           <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
         </Carousel.Caption>
       </Carousel.Item>
-      <Carousel.Item>
+      <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
           src="https://irp-cdn.multiscreensite.com/8d5dbcdf/MOBILE/jpg/1827296-taller-alberto-camacho-banner.jpg"
@@ -25,7 +25,7 @@ function Home() {
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </Carousel.Caption>
       </Carousel.Item>
-      <Carousel.Item>
+      <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
           src="https://motor.elpais.com/wp-content/uploads/2022/02/taller-2-1046x616.jpg"
