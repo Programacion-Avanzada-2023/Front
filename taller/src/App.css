@@ -9,3 +9,23 @@ body{
   height: 600px;
 }
 
+.div-buttons{
+  width: 70%;
+}
+
+.custom-col{
+  padding: 10px 0;
+}
+
+.custom-label{
+  font-weight: bold;
+  color: black;
+}
+
+.Forms{
+  margin-left: 10px;
+}
+
+.custom-carousel{
+  height: 500px;
+}
