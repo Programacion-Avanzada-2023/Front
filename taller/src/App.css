@@ -10,7 +10,11 @@ body{
 }
 
 .div-buttons{
+  position: absolute;
   width: 70%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Divide en 4 columnas */
+  grid-gap: 10px; /* Espacio entre las columnas */
 }
 
 .custom-col{
@@ -35,4 +39,8 @@ body{
 
 .custom-carousel{
   height: 500px;
+.custom-alert{
+  width: 300px;
+  position: absolute;
+  margin-top: 10px;
 }
