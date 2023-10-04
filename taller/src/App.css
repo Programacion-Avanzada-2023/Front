@@ -2,6 +2,9 @@ body{
   background-repeat: no-repeat;
   background-size: cover;
   background-image: url("../public/img/taller_santosCustom.png");
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .d-block {
@@ -19,6 +22,9 @@ body{
 
 .custom-col{
   padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .custom-label{
@@ -39,6 +45,12 @@ body{
 
 .custom-carousel{
   height: 500px;
+}
+
+.text-slide{
+  color:white;
+}
+
 .custom-alert{
   width: 300px;
   position: absolute;

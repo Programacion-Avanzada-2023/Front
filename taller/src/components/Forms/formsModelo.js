@@ -41,23 +41,6 @@ export function FormModelo() {
           />
           <Form.Control.Feedback></Form.Control.Feedback>
         </Form.Group>
-        {/** 
-        <Form.Group as={Col} md="4" controlId="validationCustomUsername">
-          <Form.Label>Username</Form.Label>
-          <InputGroup hasValidation>
-            <InputGroup.Text id="inputGroupPrepend">@</InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="Username"
-              aria-describedby="inputGroupPrepend"
-              required
-            />
-            <Form.Control.Feedback type="invalid">
-              Please choose a username.
-            </Form.Control.Feedback>
-          </InputGroup>
-        </Form.Group>
-        */}
       </Row>
       <Row className="mb-3">
         <Form.Group as={Col} md="6" controlId="validationCustom03">
@@ -67,14 +50,6 @@ export function FormModelo() {
             </Form.Select>
         </Form.Group>
       </Row>
-      <Form.Group className="mb-3">
-        <Form.Check
-          required
-          label={<span style={{ color: 'black' }}>Aceptar terminos y condiciones</span>}
-          feedback="Debes estar de acuerdo antes de registrar una marca"
-          feedbackType="invalid"
-        />
-      </Form.Group>
       <Row className="div-buttons">
         <Col className="custom-col">
           <Button type="submit">Insertar Modelo</Button>
