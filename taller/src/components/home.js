@@ -2,7 +2,7 @@ import Carousel from 'react-bootstrap/Carousel';
 
 function Home() {
   return (
-    <Carousel data-bs-theme="dark">
+    <Carousel data-bs-theme="dark" className="custom-banner">
       <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
@@ -10,8 +10,7 @@ function Home() {
           alt="First slide"
         />
         <Carousel.Caption>
-          <h5>First slide label</h5>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          <p  className="text-slide">Lleve la historia clinica de su vehiculo</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item className="custom-carousel">
@@ -21,8 +20,6 @@ function Home() {
           alt="Second slide"
         />
         <Carousel.Caption>
-          <h5>Second slide label</h5>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item className="custom-carousel">
@@ -31,11 +28,8 @@ function Home() {
           src="https://motor.elpais.com/wp-content/uploads/2022/02/taller-2-1046x616.jpg"
           alt="Third slide"
         />
-        <Carousel.Caption>
-          <h5>Third slide label</h5>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
-          </p>
+        <Carousel.Caption className="Text-slide">
+          <p className="text-slide">Amplia experiencia a su servicio</p>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>
