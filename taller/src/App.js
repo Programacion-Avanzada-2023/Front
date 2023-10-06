@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import NavBar from './components/NavBar'
 import Home from './components/home';
@@ -13,12 +14,12 @@ function App() {
       <div>
         <NavBar />
         <br />
-        
         <Routes>
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/marca" element={<FormMarca />} />
           <Route path="/modelo" element={<FormModelo />} />
           <Route path="/automovil" element={<FormAutomovil />} />
+          <Route path="/home" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>
