@@ -12,12 +12,13 @@ export function NavBar() {
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
       <Container>
+        {/*Imagen en el NavBar*/}
         <Navbar.Brand href="/home">
           <img
             src={logoImage} 
             alt="Logo"
-            width="100"
-            height="40"
+            width="120"
+            height="50"
           /> 
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

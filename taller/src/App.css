@@ -28,7 +28,7 @@ body{
 
 .custom-label{
   font-weight: bold;
-  color: black;
+  color: white;
   
 }
 
@@ -61,9 +61,9 @@ body{
 }
 
 .form-control:valid{
-  border-color: rgb(39, 107, 39);
+  border-color: rgb(15, 192, 15);
 }
 
 .form-select:valid{
-  border-color: rgb(39, 107, 39);
+  border-color: rgb(15, 192, 15);
 }

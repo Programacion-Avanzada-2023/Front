@@ -2,7 +2,10 @@ import Carousel from 'react-bootstrap/Carousel';
 
 function Home() {
   return (
+    //Banner con slide de imagenes
     <Carousel data-bs-theme="dark" className="custom-banner">
+      
+      {/*Primer imagen*/}
       <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
@@ -13,6 +16,8 @@ function Home() {
           <p  className="text-slide">Lleve la historia clinica de su vehiculo</p>
         </Carousel.Caption>
       </Carousel.Item>
+
+      {/*Segunda imagen*/}
       <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"
@@ -22,6 +27,8 @@ function Home() {
         <Carousel.Caption>
         </Carousel.Caption>
       </Carousel.Item>
+
+      {/*Tercer imagen*/}
       <Carousel.Item className="custom-carousel">
         <img
           className="d-block w-100"

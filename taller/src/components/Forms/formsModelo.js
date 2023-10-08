@@ -7,18 +7,26 @@ import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
 
 export function FormModelo() {
+  // Constantes para las alertas segun los botones que presione
   const [showInsertAlert, setShowInsertAlert] = useState(false);
   const [showSaveAlert, setShowSaveAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+
+  // Constantes para la validacion de nombre, año y marca
   const [nameValidated, setNameValidated] = useState(null);
   const [nameTouched, setNameTouched] = useState(false);
   const [ageValidated, setAgeValidated] = useState(null);
   const [ageTouched, setAgeTouched] = useState(false);
   const [marcaValidated, setMarcaValidated] = useState(null);
   const [marcaTouched, setMarcaTouched] = useState(false);
-  // Define una lista de marcas válidas
+
+  // Define una lista de marcas válidas "SOLO PRUEBA"
   const marcasValidas = ["Honda", "Toyota", "Ford"];
 
+  // Constante que contiene la url de la api Marcas
+  const apiUrl = 'http://localhost:8080/api/modelo';
+
+  // Funcion que cuando presiona un boton valida si el nombre y año son correctos.
   const handleSubmit = (event) => {
     const form = event.currentTarget;
     const isNameValid = nameTouched ? form.checkValidity() : true;
@@ -33,6 +41,7 @@ export function FormModelo() {
     }
   };
 
+  //Funcion para mostrar alerta al presionar el boton "Insertar Modelo"
   const handleInsertClick = () => {
     setShowInsertAlert(true);
     setTimeout(() => {
@@ -40,6 +49,7 @@ export function FormModelo() {
     }, 3000);
   };
 
+  //Funcion para mostrar alerta al presionar el boton "Guardar Modelo"
   const handleSaveClick = () => {
     setShowSaveAlert(true);
     setTimeout(() => {
@@ -47,6 +57,7 @@ export function FormModelo() {
     }, 3000);
   };
 
+  //Funcion para mostrar alerta al presionar el boton "Eliminar modelo"
   const handleDeleteClick = () => {
     setShowDeleteAlert(true);
     setTimeout(() => {
@@ -54,12 +65,32 @@ export function FormModelo() {
     }, 3000);
   };
 
-  // Determinar si el botón de envío debe estar habilitado o deshabilitado
+  //EJEMPLO COMO PARA IR AVANZANDO (CREO QUE ES ASI xd)
+  //Funcion para listar modelos guardados en la base de datos al presionar el boton "Listar Modelos"
+  const handleListClick = () => {
+    fetch(apiUrl + '/listar')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('No se pudieron listar las marcas.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Marcas listadas:', data);
+      })
+      .catch(error => {
+        console.error('Error al listar las marcas:', error);
+      });
+  };
+
+  // Determinar si los botones deben estar habilitado o deshabilitado
   const isSubmitDisabled = !nameValidated || !ageValidated || !marcaValidated;
 
   return (
     <Form noValidate onSubmit={handleSubmit} className="Forms">
       <Row className="mb-3">
+
+        {/*Campo "Nombre"*/}
       <Form.Group as={Col} md="4" controlId="validationCustom01">
           <Form.Label className="custom-label">Nombre</Form.Label>
           <Form.Control
@@ -72,14 +103,18 @@ export function FormModelo() {
             onChange={(e) => {
               const inputValue = e.target.value;
               setNameTouched(true);
-              const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z]+$/.test(inputValue);
+              const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z\s\-]*$/.test(inputValue);
               setNameValidated(isValid);
             }}
           />
+
+          {/*Feedback para cuando es invalido el nombre*/}
           <Form.Control.Feedback type="invalid">
             Por favor, ingrese un nombre válido.
           </Form.Control.Feedback>
         </Form.Group>
+
+        {/*Campo "Año"*/}
         <Form.Group as={Col} md="3" controlId="validationCustom02">
           <Form.Label className='custom-label'>Año</Form.Label>
           <Form.Control
@@ -92,16 +127,21 @@ export function FormModelo() {
             onChange={(e) => {
               const inputValue = e.target.value;
               setAgeTouched(true);
+              // Solo deja ingresar desde 1886 a 2023
               const isValid = /^\d{4}$/.test(inputValue) && inputValue >= 1886 && inputValue <= 2023;
               setAgeValidated(isValid);
             }}
           />
+
+          {/*Feedback para cuando el año es invalido*/}
           <Form.Control.Feedback type="invalid">
             Por favor, ingrese un año valido.
           </Form.Control.Feedback>
         </Form.Group>
       </Row>
       <Row className="mb-3">
+
+        {/*Select "Marcas"*/}
       <Form.Group as={Col} md="4" controlId="validationCustom03">
         <Form.Label className="custom-label">Marca</Form.Label>
         <Form.Select
@@ -110,10 +150,12 @@ export function FormModelo() {
           onChange={(e) => {
             const selectedMarca = e.target.value;
             setMarcaTouched(true);
+            //Solo toma como validas las marcas en la constante "COMO EJEMPLO"
             const isValid = marcasValidas.includes(selectedMarca);
             setMarcaValidated(isValid);
           }}
         >
+          {/*Se muestran las marcas en la constante "marcasValidas" para seleccionar*/}
           <option value="">Seleccione una marca</option>
           {marcasValidas.map((marca) => (
             <option key={marca} value={marca}>
@@ -121,52 +163,63 @@ export function FormModelo() {
             </option>
           ))}
         </Form.Select>
+
+        {/*Feedback para cuando no selecciona nada */}
         <Form.Control.Feedback type="invalid">
           Por favor, seleccione una marca válida.
         </Form.Control.Feedback>
       </Form.Group>
       </Row>
+
+      {/*Fila de botones*/}
       <Row className="div-buttons">
         <Col className="custom-col">
+          {/*Boton de ingresar Modelo*/}
           <Button type="submit" variant="primary" onClick={handleInsertClick} disabled={isSubmitDisabled}>
             Ingresar Modelo
           </Button>
           <br></br>
           <br></br>
-          {/* Renderiza la alerta solo si showInsertAlert es true y el campo de nombre es válido */}
-          {showInsertAlert && nameValidated && (
+          {/* Renderiza la alerta solo si showInsertAlert es true */}
+          {showInsertAlert &&(
             <Alert variant="success" className="custom-alert">
               Modelo ingresado exitosamente
             </Alert>
           )}
         </Col>
+
+        {/*Boton de Guardar cambios*/}
         <Col className="custom-col">
           <Button type="submit" variant="primary" onClick={handleSaveClick} disabled={isSubmitDisabled}>
             Guardar Cambios
           </Button>
           <br />
           <br />
-          {/* Renderiza la alerta solo si showSaveAlert es true y ambos campos son válidos */}
-          {showSaveAlert && nameValidated && ageValidated && (
+          {/* Renderiza la alerta solo si showSaveAlert es true */}
+          {showSaveAlert && (
             <Alert variant="success" className="custom-alert">
               Modelo actualizado exitosamente
             </Alert>
           )}
         </Col>
+
+        {/*Boton de Eliminar Modelo*/}
         <Col className="custom-col">
           <Button type="submit" variant="primary" onClick={handleDeleteClick} disabled={isSubmitDisabled}>
             Eliminar Modelo
           </Button>
           <br></br>
           <br></br>
-          {/* Renderiza la alerta solo si showDeleteAlert es true y el campo de origen es válido */}
-          {showDeleteAlert && ageValidated && (
+          {/* Renderiza la alerta solo si showDeleteAlert es true*/}
+          {showDeleteAlert &&(
             <Alert variant="success" className="custom-alert">
               Modelo eliminado exitosamente
             </Alert>
           )}
         </Col>
-        <Col type="submit" className="custom-col">
+
+        {/*Boton de Listar Modelos*/}
+        <Col type="submit" className="custom-col" onClick={handleListClick}>
           <Button variant="primary">
             Listar Modelos
           </Button>
