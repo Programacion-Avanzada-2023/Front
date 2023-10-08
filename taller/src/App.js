@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import FormMarca from './components/Forms/formMarca';
 import FormModelo from './components/Forms/formsModelo';
 import FormAutomovil from './components/Forms/formsAutomovil';
+import FormCliente from './components/Forms/formCliente';
+
 function App() {
   return (
     <Router>
@@ -19,6 +21,7 @@ function App() {
           <Route path="/marca" element={<FormMarca />} />
           <Route path="/modelo" element={<FormModelo />} />
           <Route path="/automovil" element={<FormAutomovil />} />
+          <Route path="/cliente" element={<FormCliente />} />
           <Route path="/home" element={<Navigate to="/" />} />
         </Routes>
       </div>

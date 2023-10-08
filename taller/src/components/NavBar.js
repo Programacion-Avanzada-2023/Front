@@ -13,7 +13,7 @@ export function NavBar() {
     <Navbar bg="dark" data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
       <Container>
         {/*Imagen en el NavBar*/}
-        <Navbar.Brand href="/home">
+        <Navbar.Brand href="/home" style={{ marginLeft: '-100px' }}>
           <img
             src={logoImage} 
             alt="Logo"
@@ -25,9 +25,10 @@ export function NavBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">           
             <NavDropdown title="Opciones" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/marca">Marca</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/modelo">Modelo</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/automovil">Automovil</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/marca">CRUD Marca</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/modelo">CRUD Modelo</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/automovil">CRUD Automovil</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/cliente">CRUD Cliente</NavDropdown.Item>
               <NavDropdown.Divider />
             </NavDropdown>
           </Nav>
