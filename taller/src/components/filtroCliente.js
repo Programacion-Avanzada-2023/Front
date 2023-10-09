@@ -1,21 +1,12 @@
-import React, { useState } from "react";
-import clientes from "../data/data";
+import React from "react";
+import Table from "react-bootstrap/Table";
 
-export function FiltroClientes({clickHandler}) {
-  const [filtro, setFiltro] = useState("");
-  const [clientesFiltrados, setClientesFiltrados] = useState([]);
-  
-  const handleFiltroChange = (event) => {
-    setFiltro(event.target.value);
-  };
-
-  const filtrarClientes = () => {
-    const clientesFiltrados = clientes.filter((cliente) =>
-      cliente.nombre.toLowerCase().includes(filtro.toLowerCase())
-    );
-    setClientesFiltrados(clientesFiltrados);
-  };
-
+export function FiltroClientes({
+  clientesFiltrados,
+  filtro,
+  handleFiltroChange,
+  filtrarClientes,
+}) {
   return (
     <div>
       <input
@@ -27,7 +18,41 @@ export function FiltroClientes({clickHandler}) {
 
       <button onClick={filtrarClientes}>Filtrar</button>
 
-      <table>
+      <Table responsive>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Correo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {clientesFiltrados.map(({ person: cliente }) => {
+            // Calcular campos para unisión.
+            const fullName = `${cliente.surName}, ${cliente.name}`,
+              fullAddress =
+                cliente?.street && cliente?.streetNumber
+                  ? `${cliente?.street} ${cliente?.streetNumber}`
+                  : null;
+
+            return (
+              <tr key={cliente.dni}>
+                <td>{cliente.id}</td>
+                <td>{fullName}</td>
+                <td>{cliente.dni}</td>
+                <td>{cliente?.phoneNumber ?? "No posee"}</td>
+                <td>{fullAddress ?? "No posee"}</td>
+                <td>{cliente?.email ?? "No posee"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+
+      {/* <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -42,7 +67,7 @@ export function FiltroClientes({clickHandler}) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table> */}
     </div>
   );
 }
