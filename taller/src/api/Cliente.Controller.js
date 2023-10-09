@@ -84,3 +84,26 @@ export async function eliminarCliente(id) {
     return false;
   }
 }
+
+/**
+ * Edita a un cliente del dominio.
+ *
+ * @param {Cliente} cliente El cliente a editar.
+ *
+ * @returns {Promise<any>} El cliente editado.
+ */
+export async function editarCliente(cliente) {
+  try {
+    // Editar primero la persona.
+    const { data: persona } = await axios({
+      method: "PATCH",
+      url: `${SpringBoot_Api}/personas/${cliente.idPersona}`,
+      data: cliente,
+    });
+
+    return persona;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}

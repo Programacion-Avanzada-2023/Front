@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
-import FiltroClientes from "../filtroCliente";
-import { buscarClientes, crearCliente } from "../../api/Cliente.Controller";
+import TablaClientes from "../TablaClientes";
+import { crearCliente } from "../../api/Cliente.Controller";
+import { useClienteContext } from "../../context/ClienteContextProvider";
 
 // import clientes from "../../data/data";
 
@@ -14,7 +14,6 @@ function FormCliente() {
   // Constantes para las alertas segun los botones que presione
   const [showInsertAlert, setShowInsertAlert] = useState(false);
   const [showSaveAlert, setShowSaveAlert] = useState(false);
-  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   // Constantes para la validacion de nombre y origen
   const [nameValidated, setNameValidated] = useState(null);
@@ -88,17 +87,11 @@ function FormCliente() {
     crearCliente(cliente).then((cliente) => {
       setShowInsertAlert(true);
 
-      console.log(cliente);
-
       setClientes([...clientes, cliente]);
       setClientesFiltrados([...clientesFiltrados, cliente]);
 
       setTimeout(() => setShowInsertAlert(false), 1000);
     });
-
-    /* setTimeout(() => {
-      setShowInsertAlert(false);
-    }, 1000); */
   };
 
   //Funcion para mostrar alerta al presionar el boton "Guardar Cambios"
@@ -110,12 +103,12 @@ function FormCliente() {
   };
 
   //Funcion para mostrar alerta al presionar el boton "Eliminar Marca"
-  const handleDeleteClick = () => {
+  /* const handleDeleteClick = () => {
     setShowDeleteAlert(true);
     setTimeout(() => {
       setShowDeleteAlert(false);
     }, 1000);
-  };
+  }; */
 
   const handleFiltrarClick = () => {
     // Filtrar clientes.
@@ -130,11 +123,14 @@ function FormCliente() {
     !streetNumberValidated ||
     !phoneValidated;
 
-  /** Estado con el listado de clientes original. */
-  const [clientes, setClientes] = useState([]);
+  const { clientes, setClientes, removerCliente } = useClienteContext();
 
   /** Estado que guarda un array de clientes filtrados. */
   const [clientesFiltrados, setClientesFiltrados] = useState([]);
+
+  useEffect(() => {
+    if (clientes?.length) setClientesFiltrados(clientes);
+  }, [clientes]);
 
   /** Estado que persiste el filtro seleccionado. */
   const [filtro, setFiltro] = useState("");
@@ -149,13 +145,6 @@ function FormCliente() {
     );
     setClientesFiltrados(clientesFiltrados);
   };
-
-  useEffect(() => {
-    buscarClientes().then((clientes) => {
-      setClientes(clientes);
-      setClientesFiltrados(clientes);
-    });
-  }, []);
 
   return (
     <div>
@@ -354,46 +343,6 @@ function FormCliente() {
             )}
           </Col>
 
-          {/*Boton de Guardar cambios*/}
-          <Col className="custom-col">
-            <Button
-              type="submit"
-              variant="primary"
-              onClick={handleSaveClick}
-              disabled={isSubmitDisabled}
-            >
-              Guardar Cambios
-            </Button>
-            <br />
-            <br />
-            {/* Renderiza la alerta solo si showSaveAlert es true*/}
-            {showSaveAlert && (
-              <Alert variant="success" className="custom-alert">
-                Cliente actualizado exitosamente
-              </Alert>
-            )}
-          </Col>
-
-          {/*Boton de Eliminar Marca*/}
-          <Col className="custom-col">
-            <Button
-              type="submit"
-              variant="primary"
-              onClick={handleDeleteClick}
-              disabled={isSubmitDisabled}
-            >
-              Eliminar Cliente
-            </Button>
-            <br></br>
-            <br></br>
-            {/* Renderiza la alerta solo si showDeleteAlert es true */}
-            {showDeleteAlert && (
-              <Alert variant="success" className="custom-alert">
-                Cliente eliminado exitosamente
-              </Alert>
-            )}
-          </Col>
-
           {/*Boton de Listar Marca*/}
           <Col type="submit" className="custom-col">
             <Button variant="primary">Listar Clientes</Button>
@@ -410,11 +359,14 @@ function FormCliente() {
           </Col>
         </Row>
       </Form>
-      <FiltroClientes
+      <TablaClientes
+        removerCliente={removerCliente}
         clientesFiltrados={clientesFiltrados}
         filtro={filtro}
         handleFiltroChange={handleFiltroChange}
         filtrarClientes={filtrarClientes}
+        setClientesFiltrados={setClientesFiltrados}
+        setClientes={setClientes}
       />
     </div>
   );
