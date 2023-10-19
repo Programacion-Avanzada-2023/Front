@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FormMarca from "./components/Forms/formMarca";
 import FormModelo from "./components/Forms/formsModelo";
 import FormAutomovil from "./components/Forms/formsAutomovil";
-import FormCliente from "./components/Forms/FormCliente";
+import FormCliente from "./components/Forms/formCliente";
 import { ClienteContextProvider } from "./context/ClienteContextProvider";
 
 function App() {
