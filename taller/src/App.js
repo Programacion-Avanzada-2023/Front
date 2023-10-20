@@ -8,10 +8,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FormMarca from "./components/Forms/formMarca";
 import FormModelo from "./components/Forms/formsModelo";
 import FormAutomovil from "./components/Forms/formsAutomovil";
-import FormCliente from "./components/Forms/formCliente";
 import FormOrdenDeTrabajo from "./components/Forms/formOrdenDeTrabajo";
 import FormServicio from "./components/Forms/formServicio";
-import { ClienteContextProvider } from "./context/ClienteContextProvider";
+import ClienteWrapper from "./components/Wrappers/ClienteWrapper";
+import ModeloWrapper from "./components/Wrappers/ModeloWrapper";
 
 function App() {
   return (
@@ -23,9 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/marca" element={<FormMarca />} />
-          <Route path="/modelo" element={<FormModelo />} />
+          <Route path="/modelo" element={<ModeloWrapper />} />
           <Route path="/automovil" element={<FormAutomovil />} />
-          <Route path="/cliente" element={<FormCliente />} />
+          <Route path="/cliente" element={<ClienteWrapper />} />
           <Route path="/ordenTrabajo" element={<FormOrdenDeTrabajo />} />
           <Route path="/servicio" element={<FormServicio />} />
           <Route path="/home" element={<Navigate to="/" />} />
