@@ -65,9 +65,9 @@ export function FormOrdenDeTrabajo() {
     }, 1000);
   };
 
-  const { Automovil } = useAutomovilContext();
+  const { automoviles } = useAutomovilContext();
 
-  const { Servicio } = useServicioContext();
+  const { servicios } = useServicioContext();
 
   return (
     <div>
@@ -88,7 +88,7 @@ export function FormOrdenDeTrabajo() {
               setAutomovilTouched(true);
               //Solo toma como validas las marcas en la constante "COMO EJEMPLO"
               const isValid = automoviles?.length
-                ? automoviles.map((automoviles) => automovil.name).includes(selectedAutomovil)
+                ? automoviles.map((automovil) => automovil.name).includes(selectedAutomovil)
                 : false; // marcasValidas.includes(selectedMarca);
               // ["Mitsubishi", "Nissan"]
               setAutomovilValidated(isValid);
