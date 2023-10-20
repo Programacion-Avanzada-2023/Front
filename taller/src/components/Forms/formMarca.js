@@ -5,6 +5,11 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
+/* 
+import TablaMarcas from "../TablaMarcas";
+import { crearMarca } from "../../api/Marca.Controller";
+import { useMarcaContext } from "../../context/MarcaContextProvider" */
+
 
 export function FormMarca() {
   // Constantes para las alertas segun los botones que presione
@@ -41,8 +46,24 @@ export function FormMarca() {
     setShowInsertAlert(true);
     setTimeout(() => {
       setShowInsertAlert(false);
-    }, 1000);
+    }, 1000); 
+
+    /* const marca = {
+      nombre,
+    };
+
+    crearMarca(marca).then((marca) => {
+      setShowInsertAlert(true);
+
+      setMarcas([...marcas, marca]);
+      setMarcasFiltradas([...marcasFiltradas, marca]);
+
+      setTimeout(() => setShowInsertAlert(false), 1000);
+    }); */
+
   };
+
+
 
   //Funcion para mostrar alerta al presionar el boton "Guardar Cambios"
   const handleSaveClick = () => {

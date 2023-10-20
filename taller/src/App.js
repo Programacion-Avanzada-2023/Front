@@ -13,27 +13,24 @@ import FormOrdenDeTrabajo from "./components/Forms/formOrdenDeTrabajo";
 import FormServicio from "./components/Forms/formServicio";
 import { ClienteContextProvider } from "./context/ClienteContextProvider";
 
-
 function App() {
   return (
     <Router>
-      <ClienteContextProvider>
-        <div>
-          <NavBar />
-          <br />
+      <div>
+        <NavBar />
+        <br />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/marca" element={<FormMarca />} />
-            <Route path="/modelo" element={<FormModelo />} />
-            <Route path="/automovil" element={<FormAutomovil />} />
-            <Route path="/cliente" element={<FormCliente />} />
-            <Route path="/ordenTrabajo" element={<FormOrdenDeTrabajo/>} />
-            <Route path="/servicio" element={<FormServicio/>} />
-            <Route path="/home" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
-      </ClienteContextProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/marca" element={<FormMarca />} />
+          <Route path="/modelo" element={<FormModelo />} />
+          <Route path="/automovil" element={<FormAutomovil />} />
+          <Route path="/cliente" element={<FormCliente />} />
+          <Route path="/ordenTrabajo" element={<FormOrdenDeTrabajo />} />
+          <Route path="/servicio" element={<FormServicio />} />
+          <Route path="/home" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

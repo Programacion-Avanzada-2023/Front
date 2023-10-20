@@ -7,6 +7,7 @@ import Alert from "react-bootstrap/Alert";
 import TablaClientes from "../TablaClientes";
 import { crearCliente } from "../../api/Cliente.Controller";
 import { useClienteContext } from "../../context/ClienteContextProvider";
+import { ClienteContextProvider } from "../../context/ClienteContextProvider";
 
 // import clientes from "../../data/data";
 
@@ -147,7 +148,7 @@ function FormCliente() {
   };
 
   return (
-    <div>
+    <ClienteContextProvider>
       <Form noValidate onSubmit={handleSubmit} className="Forms">
         <Row className="mb-3">
           {/*Campo "Nombre"*/}
@@ -368,7 +369,7 @@ function FormCliente() {
         setClientesFiltrados={setClientesFiltrados}
         setClientes={setClientes}
       />
-    </div>
+    </ClienteContextProvider>
   );
 }
 
