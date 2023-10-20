@@ -9,7 +9,10 @@ import FormMarca from "./components/Forms/formMarca";
 import FormModelo from "./components/Forms/formsModelo";
 import FormAutomovil from "./components/Forms/formsAutomovil";
 import FormCliente from "./components/Forms/formCliente";
+import FormOrdenDeTrabajo from "./components/Forms/formOrdenDeTrabajo";
+import FormServicio from "./components/Forms/formServicio";
 import { ClienteContextProvider } from "./context/ClienteContextProvider";
+
 
 function App() {
   return (
