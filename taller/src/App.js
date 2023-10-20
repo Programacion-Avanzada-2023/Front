@@ -28,7 +28,7 @@ function App() {
             <Route path="/modelo" element={<FormModelo />} />
             <Route path="/automovil" element={<FormAutomovil />} />
             <Route path="/cliente" element={<FormCliente />} />
-            <Route path="/orden" element={<FormOrdenDeTrabajo/>} />
+            <Route path="/ordenTrabajo" element={<FormOrdenDeTrabajo/>} />
             <Route path="/servicio" element={<FormServicio/>} />
             <Route path="/home" element={<Navigate to="/" />} />
           </Routes>
