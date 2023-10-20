@@ -129,7 +129,7 @@ export function FormOrdenDeTrabajo() {
         </Col>
         <Col className="custom-col">
           <Button variant="primary">
-            Listar orden de servicio
+            Listar orden de trabajo
           </Button>
         </Col>
       </Row>
