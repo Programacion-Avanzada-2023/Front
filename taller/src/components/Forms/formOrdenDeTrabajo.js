@@ -13,6 +13,37 @@ export function FormOrdenDeTrabajo() {
   const [showSaveAlert, setShowSaveAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
+  const [automovilValidated, setAutomovilValidated] = useState(null);
+  const [automovilTouched, setAutomovilTouched] = useState(false);
+  const [detalleValidated, setDetalleValidated] = useState(null);
+  const [detalleTouched, setDetalleTouched] = useState(false);
+  const [servicioValidated, setServicioValidated] = useState(null);
+  const [servicioTouched, setServicioTouched] = useState(false);
+  const [fechaCreacionValidated, setFechaCreacionValidated] = useState(null);
+  const [fechaCreacionTouched, setFechaCreacionTouched] = useState(false);
+  const [fechaModificacionValidated, setFechaModificacionValidated] = useState(null);
+  const [fechaModificacionTouched, setFechaModificacionTouched] = useState(false);
+
+  const handleSubmit = (event) => {
+    const form = event.currentTarget;
+    const isAutomovilValid = automovilTouched ? form.checkValidity() : true;
+    const isDetalleValid = detalleTouched ? form.checkValidity() : true;
+    const isServicioValid = servicioTouched ? form.checkValidity() : true;
+    const isFechaCreacionValid = fechaCreacionTouched ? form.checkValidity() : true;
+    const isFechaModificacionValid = fechaModificacionTouched ? form.checkValidity() : true;
+
+    setAutomovilValidated(isAutomovilValid);
+    setDetalleValidated(isDetalleValid);
+    setServicioValidated(isServicioValid);
+    setFechaCreacionValidated(isFechaCreacionValid);
+    setFechaModificacionValidated(isFechaModificacionValid);
+
+    if (!isAutomovilValid || !isDetalleValid || !isServicioValid || !isFechaCreacionValid || !isFechaModificacionValid) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
   const handleInsertClick = () => {
     setShowInsertAlert(true);
     setTimeout(() => {
@@ -38,23 +69,55 @@ export function FormOrdenDeTrabajo() {
 
   const { Servicio } = useServicioContext();
 
-
-
   return (
     <div>
       
     <Form className="Forms">
 
       <Row className="mb-3">
-        <Form.Group as={Col} md="4" controlId="validationCustom01">
+        <Form.Group as={Col} md="4" controlId="validationCustom03">
           <Form.Label className="custom-label">Automovil</Form.Label>
-          <Form.Control
+          <Form.Select
             required
             type="text"
             placeholder="Introduzca el automovil"
             defaultValue=""
-          />
-          <Form.Control.Feedback></Form.Control.Feedback>
+            isInvalid={!automovilValidated && automovilTouched}
+            onChange={(e) => {
+              const selectedAutomovil = e.target.value;
+              setAutomovilTouched(true);
+              //Solo toma como validas las marcas en la constante "COMO EJEMPLO"
+              const isValid = automoviles?.length
+                ? automoviles.map((automoviles) => automovil.name).includes(selectedAutomovil)
+                : false; // marcasValidas.includes(selectedMarca);
+              // ["Mitsubishi", "Nissan"]
+              setAutomovilValidated(isValid);
+            }}
+          >
+            {/*Se muestran las marcas en la constante "marcasValidas" para seleccionar*/}
+            <option value="">Seleccione un automovil</option>
+            {
+              /* marcasValidas.map((marca) => (
+              <option key={marca} value={marca}>
+                {marca}
+              </option>
+            )) */
+              automoviles?.length
+                ? automoviles.map((automovil) => {
+                    return (
+                      <option key={automovil.id} value={automovil.id}>
+                        {automovil.name}
+                      </option>
+                    );
+                  })
+                : null
+            }
+          </Form.Select>
+
+          {/*Feedback para cuando no selecciona nada */}
+          <Form.Control.Feedback type="invalid">
+            Por favor, seleccione una automovil válido.
+          </Form.Control.Feedback>
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom02">
           <Form.Label className="custom-label">Detalles</Form.Label>
@@ -66,15 +129,49 @@ export function FormOrdenDeTrabajo() {
           />
           <Form.Control.Feedback></Form.Control.Feedback>
         </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom02">
+        <Form.Group as={Col} md="4" controlId="validationCustom03">
           <Form.Label className="custom-label">Servicio</Form.Label>
-          <Form.Control
+          <Form.Select
             required
             type="text"
             placeholder="Introduzca una descripcion del servicio"
             defaultValue=""
-          />
-          <Form.Control.Feedback></Form.Control.Feedback>
+            isInvalid={!servicioValidated && servicioTouched}
+            onChange={(e) => {
+              const selectedServicio = e.target.value;
+              setServicioTouched(true);
+              //Solo toma como validas las marcas en la constante "COMO EJEMPLO"
+              const isValid = servicios?.length
+                ? servicios.map((servicios) => servicios.name).includes(selectedServicio)
+                : false; // marcasValidas.includes(selectedMarca);
+              // ["Mitsubishi", "Nissan"]
+              setServicioValidated(isValid);
+            }}
+          >
+            {/*Se muestran las marcas en la constante "marcasValidas" para seleccionar*/}
+            <option value="">Seleccione un Servicio</option>
+            {
+              /* marcasValidas.map((marca) => (
+              <option key={marca} value={marca}>
+                {marca}
+              </option>
+            )) */
+              servicios?.length
+                ? servicios.map((servicio) => {
+                    return (
+                      <option key={servicio.id} value={servicio.id}>
+                        {servicio.name}
+                      </option>
+                    );
+                  })
+                : null
+            }
+          </Form.Select>
+
+          {/*Feedback para cuando no selecciona nada */}
+          <Form.Control.Feedback type="invalid">
+            Por favor, seleccione una automovil válido.
+          </Form.Control.Feedback>
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom02">
           <Form.Label className="custom-label">fecha de creacion</Form.Label>
