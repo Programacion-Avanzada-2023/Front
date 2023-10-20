@@ -38,17 +38,13 @@ export async function buscarAutomoviles() {
 export async function crearAutomovil(automovil) {
   try {
     // Crear primero la patente.
-    const { patente } = await axios({
+    const { data } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/automovil`,
       data: automovil,
     });
 
-    
-    
-    
-
-    return patente;
+    return data;
   } catch (e) {
     console.error(e);
     return null;

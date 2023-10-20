@@ -83,7 +83,7 @@ export async function editarServicio(servicio) {
     // Editar primero la persona.
     const { service} = await axios({
       method: "PATCH",
-      url: `${SpringBoot_Api}/servicios/${id}`,
+      url: `${SpringBoot_Api}/servicios/${servicio.id}`,
       data: servicio,
     });
 
