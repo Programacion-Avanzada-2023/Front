@@ -5,6 +5,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
+import { useClienteContext } from '../../context/ClienteContextProvider.js'; 
+import { useModeloContext } from '../../context/ModeloContextProvider.js';
 
 export function FormAutomovil() {
   // Constantes para las alertas segun los botones que presione
@@ -85,6 +87,12 @@ export function FormAutomovil() {
         console.error('Error al listar las marcas:', error);
       });
   };
+
+  
+  const { Modelo } = useModeloContext();
+
+  const { Cliente } = useClienteContext();
+
 
   // Determinar si el botón de envío debe estar habilitado o deshabilitado
   const isSubmitDisabled = !patenteValidated || !modeloValidated || !clienteValidated;
