@@ -98,7 +98,7 @@ export function FormAutomovil() {
   const isSubmitDisabled = !patenteValidated || !modeloValidated || !clienteValidated;
 
   return (
-    <>
+    <div>
       <Form noValidate onSubmit={handleSubmit} className="Forms">
         <Row className="mb-3">
           {/*Select "Modelo"*/}
@@ -242,7 +242,7 @@ export function FormAutomovil() {
           </Col>
         </Row>
       </Form>
-    </>
+    </div>
   );
 }
 
