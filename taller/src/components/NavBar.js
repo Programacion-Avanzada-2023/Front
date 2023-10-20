@@ -29,7 +29,9 @@ export function NavBar() {
               <NavDropdown.Item as={Link} to="/modelo">CRUD Modelo</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/automovil">CRUD Automovil</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/cliente">CRUD Cliente</NavDropdown.Item>
-              <NavDropdown.Divider />
+              <NavDropdown.Item as={Link} to="/ordenTrabajo">CRUD OrdenTrabajo</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/servicio">CRUD Servicio</NavDropdown.Item>
+
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
