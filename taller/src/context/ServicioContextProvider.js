@@ -12,7 +12,7 @@ export function useServicioContext() {
   return useContext(servicioContext);
 }
 
-export function servicioContextProvider({ children }) {
+export function ServicioContextProvider({ children }) {
   /** Estado que controla los servicios en lista. */
   const [servicios, setServicios] = useState([]);
 
@@ -29,14 +29,14 @@ export function servicioContextProvider({ children }) {
       .then((servicios) => setServicios(servicios))
       .catch((e) => {
         console.error(e);
-        setservicios([]);
+        setServicios([]);
 
         alert(e?.message ?? "Ocurrió un error al buscar los servicios.");
       });
   }, []);
 
   return (
-    <ServicioContext.Provider
+    <servicioContext.Provider
       value={{
         servicios,
         setServicios,
@@ -45,6 +45,6 @@ export function servicioContextProvider({ children }) {
       }}
     >
       {children}
-    </ServicioContext.Provider>
+    </servicioContext.Provider>
   );
 }

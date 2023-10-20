@@ -5,6 +5,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
+import { useAutomovilContext } from '../../context/AutomovilContextProvider';
+import { useServicioContext } from '../../context/ServicioContextProvider';
 
 export function FormOrdenDeTrabajo() {
   const [showInsertAlert, setShowInsertAlert] = useState(false);
@@ -32,7 +34,15 @@ export function FormOrdenDeTrabajo() {
     }, 1000);
   };
 
+  const { Automovil } = useAutomovilContext();
+
+  const { Servicio } = useServicioContext();
+
+
+
   return (
+    <div>
+      
     <Form className="Forms">
 
       <Row className="mb-3">
@@ -134,6 +144,7 @@ export function FormOrdenDeTrabajo() {
         </Col>
       </Row>
     </Form>
+  </div>
   );
 }
 
