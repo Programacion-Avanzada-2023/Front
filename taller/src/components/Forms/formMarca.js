@@ -5,10 +5,10 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
-/* 
-import TablaMarcas from "../TablaMarcas";
+/* import TablaMarcas from "../TablaMarcas";
+ */
 import { crearMarca } from "../../api/Marca.Controller";
-import { useMarcaContext } from "../../context/MarcaContextProvider" */
+import { useMarcaContext } from "../../context/MarcaContextProvider" 
 
 
 export function FormMarca() {
@@ -48,8 +48,8 @@ export function FormMarca() {
       setShowInsertAlert(false);
     }, 1000); 
 
-    /* const marca = {
-      nombre,
+     const marca = {
+      name,
     };
 
     crearMarca(marca).then((marca) => {
@@ -59,11 +59,15 @@ export function FormMarca() {
       setMarcasFiltradas([...marcasFiltradas, marca]);
 
       setTimeout(() => setShowInsertAlert(false), 1000);
-    }); */
+    });
 
   };
 
+  const [name, setName] = useState("");
 
+  const { marcas, setMarcas } = useMarcaContext(); 
+
+  const { marcasFiltradas, setMarcasFiltradas } = useState([])
 
   //Funcion para mostrar alerta al presionar el boton "Guardar Cambios"
   const handleSaveClick = () => {
@@ -121,6 +125,8 @@ export function FormMarca() {
               setNameTouched(true);
               const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z\s\-]*$/.test(inputValue);
               setNameValidated(isValid);
+
+              setName(inputValue);
             }}
           />
 

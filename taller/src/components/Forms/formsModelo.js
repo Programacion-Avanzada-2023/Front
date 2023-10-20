@@ -156,6 +156,9 @@ export function FormModelo() {
           <Form.Label className="custom-label">Marca</Form.Label>
           <Form.Select
             required
+            type="text"
+            placeholder="Introduzca una marca"
+            defaultValue=""
             isInvalid={!marcaValidated && marcaTouched}
             onChange={(e) => {
               const selectedMarca = e.target.value;
