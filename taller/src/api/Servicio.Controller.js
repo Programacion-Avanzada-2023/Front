@@ -15,12 +15,12 @@ import { SpringBoot_Api } from "../app.config";
  */
 export async function buscarServicios() {
   try {
-    const { dataS } = await axios({
+    const { data } = await axios({
       method: "GET",
       url: `${SpringBoot_Api}/servicios`,
     });
 
-    return dataS;
+    return data;
   } catch (e) {
     console.error(e);
     return [];

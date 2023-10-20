@@ -16,12 +16,12 @@ import { SpringBoot_Api } from "../app.config";
 
 export async function buscarMarcas() {
   try {
-    const { data: dataM } = await axios({
+    const { data } = await axios({
       method: "GET",
       url: `${SpringBoot_Api}/marcas`,
     });
 
-    return dataM;
+    return data;
   } catch (e) {
     console.error(e);
     return [];
