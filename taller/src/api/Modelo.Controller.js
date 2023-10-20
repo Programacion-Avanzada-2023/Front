@@ -4,7 +4,7 @@ import { SpringBoot_Api } from "../app.config";
 /**
  * @typedef {Object} Modelo
  * @property {string} nombre
- * @property {string} año
+ * @property {int} año
  * //Falta marca para el select, pero no estoy seguro como hacer xd
  */
 
@@ -45,7 +45,7 @@ export async function crearModelo(modelo) {
       data: modelo,
     });
 
-    return client;
+    return nombre;
   } catch (e) {
     console.error(e);
     return null;

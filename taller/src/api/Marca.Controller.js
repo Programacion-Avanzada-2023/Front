@@ -92,7 +92,7 @@ export async function editarMarca(marca) {
     try {
       const { data: marc } = await axios({
         method: "PATCH",
-        url: `${SpringBoot_Api}/marcas/${id}`,
+        url: `${SpringBoot_Api}/marcas/${marca.id}`,
         data: marca,
       });
   

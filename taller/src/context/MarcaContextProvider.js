@@ -5,7 +5,7 @@ const MarcaContext = createContext({
   marcas: [],
   setMarcas: () => {},
   removerMarcas: (id) => {},
-  agregarmarca: (marca) => {},
+  agregarMarca: (marca) => {},
 });
 
 export function useMarcaContext() {
