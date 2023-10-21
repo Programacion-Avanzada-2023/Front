@@ -5,7 +5,7 @@ const ModeloContext = createContext({
   modelos: [],
   setModelos: () => {},
   removerModelos: (id) => {},
-  agregarmodelo: (modelo) => {},
+  agregarModelo: (modelo) => {},
 });
 
 export function useModeloContext() {
@@ -20,7 +20,7 @@ export function ModeloContextProvider({ children }) {
     setModelos(modelos.filter((modelo) => modelo.id !== id));
   }
 
-  function agregarModelo(modelo) {
+  function M(modelo) {
     setModelos([...modelos, modelo]);
   }
 
@@ -41,7 +41,7 @@ export function ModeloContextProvider({ children }) {
         modelos,
         setModelos,
         removerModelos,
-        agregarModelo,
+        M,
       }}
     >
       {children}

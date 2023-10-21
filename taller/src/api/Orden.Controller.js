@@ -16,7 +16,7 @@ import { SpringBoot_Api } from "../app.config";
  * @returns {Promise<Array<any>>} El listado de clientes.
  */
 
-export async function buscarOrdenDeTrabajo() {
+export async function buscarOrdenes() {
     try {
       const { data } = await axios({
         method: "GET",
@@ -94,7 +94,7 @@ export async function editarOrdenDeTrabajo(orden) {
     try {
       const { data: orde } = await axios({
         method: "PATCH",
-        url: `${SpringBoot_Api}/OrdenesDeTrabajo/${id}`,
+        url: `${SpringBoot_Api}/OrdenesDeTrabajo/${orden.id}`,
         data: orden,
       });
   

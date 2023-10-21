@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
-import { editarMarca, eliminarMarca } from "../api/Marca.Controller";
+import {  editarMarca, eliminarMarca, } from "../api/Marca.Controller";
+
 
 export function TablaMarcas({
     removerMarca,
@@ -85,7 +86,7 @@ export function TablaMarcas({
                 keyboard={false}
             >
                 <Modal.Header closeButton>
-                <Modal.Title>Editando {marca?.nombre}</Modal.Title>
+                <Modal.Title>Editando {marca?.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                 <div>
@@ -94,7 +95,7 @@ export function TablaMarcas({
                     <Form.Control
                         type="text"
                         id="name"
-                        defaultValue={marca?.nombre}
+                        defaultValue={marca?.name}
                     />
                     </div>
                 </div>
@@ -129,11 +130,12 @@ export function TablaMarcas({
                     </tr>
                 </thead>
                 <tbody>
-                    {marcasFiltradas.map(({marca, id }) => {
+                    
+                    {marcasFiltradas?.map(({marca, id}) => {
                         return (
                         <tr key={marca.id}>
                             <td>{id}</td>
-                            <td>{nombre}</td>
+                            <td>{marca.nombre}</td>
                             <td>
                                 {/*Boton de Eliminar Marca*/}
                                 <Col className="custom-col">
@@ -186,3 +188,5 @@ export function TablaMarcas({
         </div>
     );
 }
+
+export default TablaMarcas;

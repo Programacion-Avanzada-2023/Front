@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
 import { editarAutomovil, eliminarAutomovil } from "../api/Marca.Controller";
-import { eliminarAutomovil } from "./Automovil.Contrller";
+
 
 export function TablaAutomovil({
     removerAutomovil,

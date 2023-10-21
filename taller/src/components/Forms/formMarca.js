@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Alert from 'react-bootstrap/Alert';
-/* import TablaMarcas from "../TablaMarcas";
- */
+import TablaMarcas from "../TablaMarcas";
 import { crearMarca } from "../../api/Marca.Controller";
 import { useMarcaContext } from "../../context/MarcaContextProvider" 
 
@@ -43,11 +42,6 @@ export function FormMarca() {
 
   //Funcion para mostrar alerta al presionar el boton "Insertar Marca"
   const handleInsertClick = () => {
-    setShowInsertAlert(true);
-    setTimeout(() => {
-      setShowInsertAlert(false);
-    }, 1000); 
-
      const marca = {
       name,
     };
@@ -65,9 +59,30 @@ export function FormMarca() {
 
   const [name, setName] = useState("");
 
-  const { marcas, setMarcas } = useMarcaContext(); 
+  const { marcas, setMarcas, removerMarca } = useMarcaContext(); 
 
-  const { marcasFiltradas, setMarcasFiltradas } = useState([])
+  const { marcasFiltradas, setMarcasFiltradas } = useState([]);
+
+  useEffect(() => {
+    if (marcas?.length) setMarcasFiltradas(marcas);
+  }, [marcas]);
+
+
+  const handleFiltroChange = (event) => {
+    setFiltro(event.target.value);
+  };
+
+  const filtrarMarcas = () => {
+    const marcasFiltradas = marcas.filter(({ marca }) =>
+      marca.nombre.toLowerCase().includes(filtro.toLowerCase())
+    );
+    setMarcasFiltradas(marcasFiltradas);
+  };
+
+  const handleFiltrarClick = () => {
+    // Filtrar clientes.
+    filtrarMarcas();
+  };
 
   //Funcion para mostrar alerta al presionar el boton "Guardar Cambios"
   const handleSaveClick = () => {
@@ -84,6 +99,8 @@ export function FormMarca() {
       setShowDeleteAlert(false);
     }, 1000);
   };
+
+  const [filtro, setFiltro] = useState("");
 
   //EJEMPLO COMO PARA IR AVANZANDO (CREO QUE ES ASI xd)
   //Funcion para listar marcas guardadas en la base de datos al presionar el boton "Listar Marcas"
@@ -107,115 +124,127 @@ export function FormMarca() {
   const isSubmitDisabled = !nameValidated || !originValidated;
 
   return (
-    <Form noValidate onSubmit={handleSubmit} className="Forms">
-      <Row className="mb-3">
-        
-        {/*Campo "Nombre"*/}
-        <Form.Group as={Col} md="4" controlId="validationCustom01">
-          <Form.Label className="custom-label">Nombre</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Introduzca nombre de la marca"
-            defaultValue=""
-            isInvalid={!nameValidated && nameTouched}
-            // Funciona que valida el nombre con un determinado formato
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              setNameTouched(true);
-              const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z\s\-]*$/.test(inputValue);
-              setNameValidated(isValid);
+    <div>
+      <Form noValidate onSubmit={handleSubmit} className="Forms">
+        <Row className="mb-3">
+          
+          {/*Campo "Nombre"*/}
+          <Form.Group as={Col} md="4" controlId="validationCustom01">
+            <Form.Label className="custom-label">Nombre</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="Introduzca nombre de la marca"
+              defaultValue=""
+              isInvalid={!nameValidated && nameTouched}
+              // Funciona que valida el nombre con un determinado formato
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setNameTouched(true);
+                const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z\s\-]*$/.test(inputValue);
+                setNameValidated(isValid);
 
-              setName(inputValue);
-            }}
-          />
+                setName(inputValue);
+              }}
+            />
 
-          {/*Feedback si es un nombre incorrecto*/}
-          <Form.Control.Feedback type="invalid">
-            Por favor, ingrese un nombre válido.
-          </Form.Control.Feedback>
-        </Form.Group>
+            {/*Feedback si es un nombre incorrecto*/}
+            <Form.Control.Feedback type="invalid">
+              Por favor, ingrese un nombre válido.
+            </Form.Control.Feedback>
+          </Form.Group>
 
-        {/*Campo origen*/}
-        <Form.Group as={Col} md="4" controlId="validationCustom02">
-          <Form.Label className="custom-label">Origen</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Introduzca país de origen de la marca"
-            defaultValue=""
-            isInvalid={!originValidated && originTouched}
-            // Funcion que valida el origen con un determinado formato
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              setOriginTouched(true);
-              const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z]+$/.test(inputValue);
-              setOriginValidated(isValid);
-            }}
-          />
+          {/*Campo origen*/}
+          <Form.Group as={Col} md="4" controlId="validationCustom02">
+            <Form.Label className="custom-label">Origen</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="Introduzca país de origen de la marca"
+              defaultValue=""
+              isInvalid={!originValidated && originTouched}
+              // Funcion que valida el origen con un determinado formato
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setOriginTouched(true);
+                const isValid = inputValue.length >= 3 && inputValue.length <= 50 && /^[A-Za-z]+$/.test(inputValue);
+                setOriginValidated(isValid);
+              }}
+            />
 
-          {/*Feedback si es un origen incorrecto*/}
-          <Form.Control.Feedback type="invalid">
-            Por favor, ingrese un país de origen válido.
-          </Form.Control.Feedback>
-        </Form.Group>
-      </Row>
+            {/*Feedback si es un origen incorrecto*/}
+            <Form.Control.Feedback type="invalid">
+              Por favor, ingrese un país de origen válido.
+            </Form.Control.Feedback>
+          </Form.Group>
+        </Row>
 
-      {/*Fila de botones*/}
-      <Row className="div-buttons">
-        <Col className="custom-col">
-          {/*Boton de ingresar Marca*/}
-          <Button type="submit" variant="primary" onClick={handleInsertClick} disabled={isSubmitDisabled}>
-            Ingresar Marca
-          </Button>
-          <br></br>
-          <br></br>
-          {/* Renderiza la alerta solo si showInsertAlert es true */}
-          {showInsertAlert && (
-            <Alert variant="success" className="custom-alert">
-              Marca ingresada exitosamente
-            </Alert>
-          )}
-        </Col>
+        {/*Fila de botones*/}
+        <Row className="div-buttons">
+          <Col className="custom-col">
+            {/*Boton de ingresar Marca*/}
+            <Button type="submit" variant="primary" onClick={handleInsertClick} disabled={isSubmitDisabled}>
+              Ingresar Marca
+            </Button>
+            <br></br>
+            <br></br>
+            {/* Renderiza la alerta solo si showInsertAlert es true */}
+            {showInsertAlert && (
+              <Alert variant="success" className="custom-alert">
+                Marca ingresada exitosamente
+              </Alert>
+            )}
+          </Col>
 
-        {/*Boton de Guardar cambios*/}
-        <Col className="custom-col">
-          <Button type="submit" variant="primary" onClick={handleSaveClick} disabled={isSubmitDisabled}>
-            Guardar Cambios
-          </Button>
-          <br />
-          <br />
-          {/* Renderiza la alerta solo si showSaveAlert es true*/}
-          {showSaveAlert &&  (
-            <Alert variant="success" className="custom-alert">
-              Marca actualizada exitosamente
-            </Alert>
-          )}
-        </Col>
+          {/*Boton de Guardar cambios*/}
+          <Col className="custom-col">
+            <Button type="submit" variant="primary" onClick={handleSaveClick} disabled={isSubmitDisabled}>
+              Guardar Cambios
+            </Button>
+            <br />
+            <br />
+            {/* Renderiza la alerta solo si showSaveAlert es true*/}
+            {showSaveAlert &&  (
+              <Alert variant="success" className="custom-alert">
+                Marca actualizada exitosamente
+              </Alert>
+            )}
+          </Col>
 
-        {/*Boton de Eliminar Marca*/}
-        <Col className="custom-col">
-          <Button type="submit" variant="primary" onClick={handleDeleteClick} disabled={isSubmitDisabled}>
-            Eliminar Marca
-          </Button>
-          <br></br>
-          <br></br>
-          {/* Renderiza la alerta solo si showDeleteAlert es true */}
-          {showDeleteAlert &&(
-            <Alert variant="success" className="custom-alert">
-              Marca eliminada exitosamente
-            </Alert>
-          )}
-        </Col>
+          {/*Boton de Eliminar Marca*/}
+          <Col className="custom-col">
+            <Button type="submit" variant="primary" onClick={handleDeleteClick} disabled={isSubmitDisabled}>
+              Eliminar Marca
+            </Button>
+            <br></br>
+            <br></br>
+            {/* Renderiza la alerta solo si showDeleteAlert es true */}
+            {showDeleteAlert &&(
+              <Alert variant="success" className="custom-alert">
+                Marca eliminada exitosamente
+              </Alert>
+            )}
+          </Col>
 
-        {/*Boton de Listar Marca*/}
-        <Col type="submit" className="custom-col" onClick={handleListClick}>
-          <Button variant="primary">
-            Listar Marcas
-          </Button>
-        </Col>
-      </Row>
-    </Form>
+          {/*Boton de Listar Marca*/}
+          <Col type="submit" className="custom-col" onClick={handleListClick}>
+            <Button variant="primary">
+              Listar Marcas
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+
+      <TablaMarcas
+      removerMarca={removerMarca}
+      marcasFiltradas={marcasFiltradas}
+      filtro={filtro}
+      handleFiltroChange={handleFiltroChange}
+      filtrarMarcas={filtrarMarcas}
+      setMarcasFiltradas={setMarcasFiltradas}
+      setMarcas={setMarcas}
+      />
+    </div>
   );
 }
 

@@ -1,36 +1,36 @@
 import React, { useState } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
-import { editarModelo, eliminarModelo } from "../api/Modelo.Controller";
+import { editarOrdenDeTrabajo, eliminarOrdenDeTrabajo} from "../api/orden.Controller";
 
 export function TablaModelos({
-  removerModelo,
-  modelosFiltrados,
+  removerOrden,
+  OrdenesFiltradas,
   filtro,
   handleFiltroChange,
-  filtrarModelos,
-  setModelosFiltrados,
-  setModelos,
+  filtrarOrdenes,
+  setOrdenesFiltradas,
+  setOrdenes,
 }) {
   const handleDeleteClick = (id) => {
-    eliminarModelo(id).then(() => {
-      removerModelo(id);
-      setModelosFiltrados(
-        modelosFiltrados.filter((modelo) => modelo.id !== id)
+    eliminarOrdenDeTrabajo(id).then(() => {
+      removerOrden(id);
+      setOrdenesFiltradas(
+        modelosFiltrados.filter((orden) => orden.id !== id)
       );
     });
     handleCloseDeleteModal();
   };
 
-  const handleEditClick = (modeloId) => {
-    editarModelo(modelo).then((modelo) => {
-      setModelos((modelos) => {
-        const modeloPrev = modelos.find((m) => m.model.id === modeloId);
+  const handleEditClick = (ordenId) => {
+    editarOrdenDeTrabajo(orden).then((orden) => {
+      setModelos((ordenes) => {
+        const ordenPrev = ordenes.find((o) => o.ordenn.id === ordenId);
 
-        if (modeloPrev) {
-          setModelosFiltrados(modelos);
+        if (ordenPrev) {
+          setOrdenesFiltradas(ordenes);
           return [
-            ...modelos.filter((m) => m.model.id !== modeloId),
-            (modeloPrev.model = modelo),
+            ...ordenes.filter((o) => o.ordenn.id !== ordenId),
+            (ordenPrev.ordenn = orden),
           ];
         }
       });
@@ -42,7 +42,7 @@ export function TablaModelos({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const [modelo, setModelo] = useState(null);
+  const [orden, setOrden] = useState(null);
 
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
   const handleCloseEditModal = () => setShowEditModal(false);
@@ -59,11 +59,11 @@ export function TablaModelos({
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Está por borrar un modelo.</Modal.Title>
+          <Modal.Title>Está por borrar una orden de trabajo.</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Esta acción es permanente, ¿está seguro de querer borrar a{" "}
-          {modelo?.name}?
+          {orden?.name}?
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseDeleteModal}>
@@ -71,7 +71,7 @@ export function TablaModelos({
           </Button>
           <Button
             variant="danger"
-            onClick={() => handleDeleteClick(modelo?.id)}
+            onClick={() => handleDeleteClick(orden?.id)}
           >
             Si
           </Button>
@@ -94,10 +94,9 @@ export function TablaModelos({
               <Form.Control
                 type="text"
                 id="name"
-                defaultValue={modelo?.name}
+                defaultValue={orden?.name}
               />
             </div>
-            
           </div>
         </Modal.Body>
         <Modal.Footer>
