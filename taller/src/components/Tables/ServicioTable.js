@@ -47,16 +47,16 @@ export default function ServicioTable({
 
   /** Estados y funciones helper para el modal de edicion. */
   const [showEditModal, setShowEditModal] = useState(false);
-  const [canEditService, setCanEditService] = useState(false);
+  const [canEditOrder, setCanEditOrder] = useState(false);
 
-  const serviceEditDetailsRef = useRef(null);
+  const orderEditDetailsRef = useRef(null);
 
   const handleEditModal = async () => {
     // Esconder modal de edicion.
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const descripcion = serviceEditDetailsRef.current.value;
+    const descripcion = orderEditDetailsRef.current.value;
 
     // Actualizar la orden en el contexto.
     setServicios((prev) => {
@@ -108,7 +108,7 @@ export default function ServicioTable({
               <span className="text-sm text-slate-700">Descripcion</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
-                ref={serviceEditDetailsRef}
+                ref={orderEditDetailsRef}
                 defaultValue={servicioSeleccionado?.descripcion}
                 rows={5}
                 style={{
@@ -118,7 +118,7 @@ export default function ServicioTable({
                   const value = e.target?.value;
 
                   // Actualizar el estado.
-                  setCanEditService(value?.length ? true : false);
+                  setCanEditOrder(value?.length ? true : false);
                 }}
               ></textarea>
             </div>
@@ -131,7 +131,7 @@ export default function ServicioTable({
           <Button
             variant="primary"
             onClick={handleEditModal}
-            disabled={!canEditService}
+            disabled={!canEditOrder}
           >
             Guardar
           </Button>
