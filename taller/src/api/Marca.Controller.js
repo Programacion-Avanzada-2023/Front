@@ -3,7 +3,7 @@ import { SpringBoot_Api } from "../app.config";
 
 /**
  * @typedef {Object} Marca
- * @property {string} nombre
+ * @property {string} [nombre]
  */
 
 /**
@@ -33,7 +33,7 @@ export async function buscarMarcas() {
  *
  * @param {Marca} marca La marca a insertar.
  *
- * @returns {Promise<any>} La marca insertada.
+ * @returns {Promise<Marca>} La marca insertada.
  */
 export async function crearMarca(marca) {
   try {
@@ -43,15 +43,6 @@ export async function crearMarca(marca) {
       url: `${SpringBoot_Api}/marcas`,
       data: marca,
     });
-
-    /* // Crear el recurso del cliente.
-    const { data: client } = await axios({
-      method: "POST",
-      url: `${SpringBoot_Api}/clientes`,
-      data: {
-        person: persona.id,
-      },
-    }); */
 
     return marc;
   } catch (e) {
