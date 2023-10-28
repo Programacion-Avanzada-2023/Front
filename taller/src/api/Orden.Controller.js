@@ -76,18 +76,21 @@ export async function eliminarOrdenDeTrabajo(id) {
 }
 
 /**
- * Edita a una marca del dominio.
+ * Edita a una orden del dominio.
  *
- * @param {OrdenDeTrabajo} orden La marca a editar.
+ * @param {number} id El ID de la orden a editar.
+ * @param {string} detalles Los detalles nuevos de la orden.
  *
- * @returns {Promise<any>} La marca editada.
+ * @returns {Promise<OrdenDeTrabajo>} La orden editada.
  */
-export async function editarOrdenDeTrabajo(orden) {
+export async function editarOrdenDeTrabajo(id, detalles) {
   try {
     const { data: orde } = await axios({
       method: "PATCH",
-      url: `${SpringBoot_Api}/OrdenesDeTrabajo/${orden.id}`,
-      data: orden,
+      url: `${SpringBoot_Api}/ordenes/${id}`,
+      data: {
+        detalles,
+      },
     });
 
     return orde;

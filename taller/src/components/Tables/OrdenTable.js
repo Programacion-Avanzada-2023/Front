@@ -67,6 +67,7 @@ import Select from "react-select";
 import { useState, useRef } from "react";
 import {
   agregarServicioAOrdenDeTrabajo,
+  editarOrdenDeTrabajo,
   eliminarOrdenDeTrabajo,
   eliminarServicioDeOrdenDeTrabajo,
 } from "../../api/Orden.Controller";
@@ -115,16 +116,16 @@ export default function OrdenTable({
     // Obtener el valor del textarea.
     const detalles = orderEditDetailsRef.current.value;
 
+    // Actualizar la orden.
+    const orden = await editarOrdenDeTrabajo(ordenSeleccionada.id, detalles);
+
     // Actualizar la orden en el contexto.
     setOrdenes((prev) => {
-      // Buscar la orden original.
-      const orden = prev.find((o) => o.id === ordenSeleccionada?.id);
-
-      // Actualizar la orden con el resultado de la peticion.
-      orden.detalles = detalles;
+      // Filtrar todas las ordenes.
+      const ordenes = prev.filter((o) => o.id !== orden.id);
 
       // Retornar el estado actualizado.
-      return prev;
+      return [...ordenes, orden];
     });
   };
 
@@ -178,6 +179,9 @@ export default function OrdenTable({
 
   /** Estado que controla si el usuario puede o no eliminar servicios de una orden. */
   const [canRemoveServices, setCanRemoveServices] = useState(false);
+
+  /** Estado que controla si el usuario puede o no agregar un nuevo servicio. */
+  const [canAddServices, setCanAddServices] = useState(false);
 
   /**
    * Funcion que administra el flujo del borrado de servicios de una orden.
@@ -338,11 +342,23 @@ export default function OrdenTable({
                     isDisabled: isInOrden,
                   };
                 })}
+                onChange={(e) => {
+                  // Validar que la orden no tenga todos los servicios.
+                  const canAdd =
+                    e?.length < servicios?.length &&
+                    e?.length > 0 &&
+                    e?.length + ordenSeleccionada?.servicios?.length <=
+                      servicios?.length;
+
+                  // Actualizar el estado.
+                  setCanAddServices(canAdd);
+                }}
               ></Select>
               <Button
                 variant="primary"
                 className="mt-2 w-full"
                 onClick={handleAddServiceToOrder}
+                disabled={!canAddServices}
               >
                 Agregar a Orden
               </Button>
