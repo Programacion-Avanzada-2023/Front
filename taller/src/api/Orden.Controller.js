@@ -3,9 +3,10 @@ import { SpringBoot_Api } from "../app.config";
 
 /**
  * @typedef {Object} OrdenDeTrabajo
- * @property {string} detalles
- * @property {date} fechaCreacion
- * @property {date} fechaModificacion
+ *
+ * @property {number} automovil
+ * @property {Array<number>} servicios
+ * @property {string} [detalles]
  */
 
 /**
@@ -17,45 +18,36 @@ import { SpringBoot_Api } from "../app.config";
  */
 
 export async function buscarOrdenes() {
-    try {
-      const { data } = await axios({
-        method: "GET",
-        url: `${SpringBoot_Api}/OrdenesDeTrabajo`,
-      });
-  
-      return data;
-    } catch (e) {
-      console.error(e);
-      return [];
-    }
-  }
+  try {
+    const { data } = await axios({
+      method: "GET",
+      url: `${SpringBoot_Api}/ordenes`,
+    });
 
-  /**
- * Inserta una nueva marca en el sistema.
+    return data;
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+}
+
+/**
+ * Inserta una nueva orden de trabajo en el sistema.
  *
- * @param {OrdenDeTrabajo} orden La marca a insertar.
+ * @param {OrdenDeTrabajo} orden La orden a insertar.
  *
- * @returns {Promise<any>} La marca insertada.
+ * @returns {Promise<OrdenDeTrabajo>} La orden insertada.
  */
 export async function crearOrdenDeTrabajo(orden) {
   try {
     // Crear primero la marca.
-    const { data: orde } = await axios({
+    const { data: ordenTrabajo } = await axios({
       method: "POST",
-      url: `${SpringBoot_Api}/OrdenesDeTrabajo`,
+      url: `${SpringBoot_Api}/ordenes`,
       data: orden,
     });
 
-    /* // Crear el recurso del cliente.
-    const { data: client } = await axios({
-      method: "POST",
-      url: `${SpringBoot_Api}/clientes`,
-      data: {
-        person: persona.id,
-      },
-    }); */
-
-    return orde;
+    return ordenTrabajo;
   } catch (e) {
     console.error(e);
     return null;
@@ -70,37 +62,90 @@ export async function crearOrdenDeTrabajo(orden) {
  * @returns {Promise<boolean>} Si se eliminó o no.
  */
 export async function eliminarOrdenDeTrabajo(id) {
-    try {
-      await axios({
-        method: "DELETE",
-        url: `${SpringBoot_Api}/OrdenesDeTrabajo/${id}`,
-      });
-  
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  }
+  try {
+    await axios({
+      method: "DELETE",
+      url: `${SpringBoot_Api}/ordenes/${id}`,
+    });
 
-  /**
- * Edita a una marca del dominio.
- *
- * @param {OrdenDeTrabajo} orden La marca a editar.
- *
- * @returns {Promise<any>} La marca editada.
- */
-export async function editarOrdenDeTrabajo(orden) {
-    try {
-      const { data: orde } = await axios({
-        method: "PATCH",
-        url: `${SpringBoot_Api}/OrdenesDeTrabajo/${orden.id}`,
-        data: orden,
-      });
-  
-      return orde;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
   }
+}
+
+/**
+ * Edita a una orden del dominio.
+ *
+ * @param {number} id El ID de la orden a editar.
+ * @param {string} detalles Los detalles nuevos de la orden.
+ *
+ * @returns {Promise<OrdenDeTrabajo>} La orden editada.
+ */
+export async function editarOrdenDeTrabajo(id, detalles) {
+  try {
+    const { data: orde } = await axios({
+      method: "PATCH",
+      url: `${SpringBoot_Api}/ordenes/${id}`,
+      data: {
+        detalles,
+      },
+    });
+
+    return orde;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+/**
+ * Agrega un servicio a una orden de trabajo.
+ *
+ * @param {number} id El ID de la orden de trabajo.
+ * @param {number} servicioId El ID del servicio a agregar.
+ *
+ * @returns {Promise<any>} La orden de trabajo editada.
+ */
+export async function agregarServicioAOrdenDeTrabajo(id, servicioId) {
+  try {
+    const { data: orden } = await axios({
+      method: "POST",
+      url: `${SpringBoot_Api}/ordenes/${id}/servicios`,
+      data: {
+        servicio: servicioId,
+      },
+    });
+
+    return orden;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
+
+/**
+ * Elimina un servicio de una orden de trabajo.
+ *
+ * @param {number} id El ID de la orden de trabajo.
+ * @param {number} servicioId El ID del servicio a eliminar.
+ *
+ * @returns {Promise<any>} La orden de trabajo editada.
+ */
+export async function eliminarServicioDeOrdenDeTrabajo(id, servicioId) {
+  try {
+    const { data: orden } = await axios({
+      method: "DELETE",
+      url: `${SpringBoot_Api}/ordenes/${id}/servicios`,
+      data: {
+        servicio: servicioId,
+      },
+    });
+
+    return orden;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}

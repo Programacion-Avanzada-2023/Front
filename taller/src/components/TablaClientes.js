@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
 import { editarCliente, eliminarCliente } from "../api/Cliente.Controller";
 
@@ -22,6 +22,11 @@ export function TablaClientes({
   };
 
   const handleEditClick = (personaId) => {
+    const valido = validateInputFields();
+    setValidated(valido);
+
+    if (!valido) return;
+
     editarCliente(cliente).then((cliente) => {
       setClientes((clientes) => {
         const clientePrev = clientes.find((c) => c.person.id === personaId);
@@ -48,6 +53,72 @@ export function TablaClientes({
   const handleCloseEditModal = () => setShowEditModal(false);
   const handleShowDeleteModal = () => setShowDeleteModal(true);
   const handleShowEditModal = () => setShowEditModal(true);
+
+  /** Referencias a campos de edicion del modal. */
+  const nameRef = useRef();
+  const surnameRef = useRef();
+  const streetRef = useRef();
+  const streetNumberRef = useRef();
+  const phoneNumberRef = useRef();
+  const emailRef = useRef();
+
+  /** Helpers para validacion de campos. */
+  const [validated, setValidated] = useState(false);
+
+  const validateInputFields = () => {
+    function isValidForm() {
+      // Nombre no puede estar vacio, menor a 32 caracteres.
+      if (!nameRef.current.value?.length || nameRef.current.value.length > 32)
+        return false;
+
+      // Apellido no puede estar vacio, menor a 32 caracteres.
+      if (
+        !surnameRef.current.value?.length ||
+        surnameRef.current.value.length > 32
+      )
+        return false;
+
+      // Calle no puede tener mas de 32 caracteres.
+      if (
+        streetRef.current.value?.length ||
+        streetRef.current.value.length > 32
+      )
+        return false;
+
+      // Numero de calle no puede ser negativo ni mayor a 9999.
+      if (
+        streetNumberRef.current.value < 0 ||
+        streetNumberRef.current.value > 9999
+      )
+        return false;
+
+      // Telefono debe ser de origen argentino.
+      if (
+        !phoneNumberRef.current.value?.length &&
+        phoneNumberRef.current.value.length > 32 &&
+        /^(?:\d{7,15}|\d{2,5}-\d{6,11}|\+\d{2,3}-?\d{1,15})$/.test(
+          phoneNumberRef.current.value
+        )
+      )
+        return false;
+
+      // Correo debe ser valido.
+      if (
+        !emailRef.current.value?.length &&
+        /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/.test(
+          emailRef.current.value
+        )
+      )
+        return false;
+
+      return true;
+    }
+
+    const isValid = isValidForm();
+    setValidated(isValid);
+
+    return isValid;
+  };
 
   return (
     <div>
@@ -87,56 +158,87 @@ export function TablaClientes({
           <Modal.Title>Editando {cliente?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
+          <Form noValidate validated={validated} onChange={validateInputFields}>
             <div>
               <Form.Label htmlFor="name">Nombre</Form.Label>
               <Form.Control
                 type="text"
                 id="name"
+                ref={nameRef}
                 defaultValue={cliente?.name}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                El nombre no puede estar vacio y debe ser menor a 32 caracteres.
+              </Form.Control.Feedback>
             </div>
             <div>
               <Form.Label htmlFor="surname">Apellido</Form.Label>
               <Form.Control
                 type="text"
                 id="surname"
+                ref={surnameRef}
                 defaultValue={cliente?.surName}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                El apellido no puede estar vacio y debe ser menor a 32
+                caracteres.
+              </Form.Control.Feedback>
             </div>
             <div>
               <Form.Label htmlFor="street">Calle</Form.Label>
               <Form.Control
                 type="text"
                 id="street"
+                ref={streetRef}
                 defaultValue={cliente?.street}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                La calle debe tener menos de 32 caracteres.
+              </Form.Control.Feedback>
             </div>
             <div>
               <Form.Label htmlFor="streetNumber">Nro. Calle</Form.Label>
               <Form.Control
                 type="number"
                 id="streetNumber"
+                ref={streetNumberRef}
                 defaultValue={cliente?.streetNumber}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                El numero de calle no puede ser negativo ni mayor a 9999.
+              </Form.Control.Feedback>
             </div>
             <div>
               <Form.Label htmlFor="phoneNumber">Teléfono</Form.Label>
               <Form.Control
                 type="text"
                 id="phoneNumber"
+                ref={phoneNumberRef}
                 defaultValue={cliente?.phoneNumber}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                El numero de telefono debe ser de origen argentino.
+              </Form.Control.Feedback>
             </div>
             <div>
               <Form.Label htmlFor="email">E-Mail</Form.Label>
               <Form.Control
                 type="text"
                 id="email"
+                ref={emailRef}
                 defaultValue={cliente?.email}
+                onChange={validateInputFields}
               />
+              <Form.Control.Feedback type="invalid">
+                El correo no es valido.
+              </Form.Control.Feedback>
             </div>
-          </div>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleCloseEditModal}>
@@ -145,6 +247,7 @@ export function TablaClientes({
           <Button
             variant="success"
             onClick={() => handleEditClick(cliente?.personaId)}
+            disabled={!validated}
           >
             Guardar
           </Button>

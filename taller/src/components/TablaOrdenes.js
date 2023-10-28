@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
-import { editarOrdenDeTrabajo, eliminarOrdenDeTrabajo} from "../api/orden.Controller";
+import { editarOrdenDeTrabajo, eliminarOrdenDeTrabajo} from "../api/Orden.Controller";
 
 export function TablaModelos({
   removerOrden,

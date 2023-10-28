@@ -3,7 +3,8 @@ import { SpringBoot_Api } from "../app.config";
 
 /**
  * @typedef {Object} Servicio
- * @property {string} descripcion
+ * @property {string} name
+ * @property {string} [descripcion]
  */
 
 /**
@@ -32,18 +33,18 @@ export async function buscarServicios() {
  *
  * @param {Servicio} servicio El servicio a insertar.
  *
- * @returns {Promise<any>} El servicio insertado.
+ * @returns {Promise<Servicio>} El servicio insertado.
  */
 export async function crearServicio(servicio) {
   try {
     // Crear primero la persona.
-    const { service } = await axios({
+    const { data } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/servicios`,
       data: servicio,
     });
 
-    return service;
+    return data;
   } catch (e) {
     console.error(e);
     return null;
@@ -81,7 +82,7 @@ export async function eliminarServicio(id) {
 export async function editarServicio(servicio) {
   try {
     // Editar primero la persona.
-    const { service} = await axios({
+    const { data: service} = await axios({
       method: "PATCH",
       url: `${SpringBoot_Api}/servicios/${servicio.id}`,
       data: servicio,
