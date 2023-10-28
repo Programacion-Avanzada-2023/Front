@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Row from 'react-bootstrap/Row';
-import Alert from 'react-bootstrap/Alert';
-import { useServicioContext } from '../../context/ServicioContextProvider';
-import ServicioTable from "../Tables/ServicioTable"
-import {crearServicio} from "../../api/Servicio.Controller"
+import React, { useState, useRef } from "react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Row from "react-bootstrap/Row";
+import Alert from "react-bootstrap/Alert";
+import { useServicioContext } from "../../context/ServicioContextProvider";
+import ServicioTable from "../Tables/ServicioTable";
+import { crearServicio } from "../../api/Servicio.Controller";
 
 const formatOptionWithDescription = ({ value, label, description }) => (
   <div className="flex flex-col">
@@ -16,8 +16,9 @@ const formatOptionWithDescription = ({ value, label, description }) => (
   </div>
 );
 
-export default function Servicio({something}) {
-  const {servicios, setServicios, removerServicios, agregarServicio} = useServicioContext();
+export default function Servicio({ something }) {
+  const { servicios, setServicios, removerServicios, agregarServicio } =
+    useServicioContext();
 
   const [name, setName] = useState("");
   const nameRef = useRef(name);
@@ -28,17 +29,20 @@ export default function Servicio({something}) {
 
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (name) => {
+  const validateInputFields = (name, descripcion) => {
     if (!name?.length) return false;
+    if (!descripcion?.length || descripcion?.length < 4) return false;
 
     return true;
   };
 
   const handleServiceCreation = async () => {
+    if (!name) return;
+
     // Armar cuerpo requerido para creacion.
     const body = {
-      name: name ?? null,
-      descripciones: descripciones ?? null,
+      name: name,
+      descripcion: descripciones ?? null,
     };
 
     setIsLoading(true);
@@ -79,11 +83,12 @@ export default function Servicio({something}) {
       <div className="w-full p-4 bg-slate-200 rounded-xl flex flex-col gap-y-2">
         <h1 className="text-xl">Servicios</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
-          <div className="w-full py-1">
+          <div className="w-full py-1 flex flex-col">
             <span className="text-sm text-slate-600 p-0">
               Nombre <span className="text-red-400">*</span>
             </span>
             <input
+              className="p-1 rounded-md"
               isClearable
               isSearchable
               placeholder="Introduzca un nombre"
@@ -94,13 +99,14 @@ export default function Servicio({something}) {
                 setName(value);
 
                 // Usar directamente 'value' para la validación.
-                setCanCreate(validateInputFields(value));
+                setCanCreate(validateInputFields(value, descripciones));
               }}
             ></input>
-
           </div>
-          <div className="w-full col-span-2">
-            <span className="text-sm text-slate-600 p-0">Descripcion</span>
+          <div className="w-full">
+            <span className="text-sm text-slate-600 p-0">
+              Descripcion <span className="text-red-400">*</span>
+            </span>
             <textarea
               rows={5}
               className="w-full rounded-md p-2"
@@ -114,6 +120,7 @@ export default function Servicio({something}) {
 
                 setDescripciones(value?.length ? value : null);
 
+                setCanCreate(validateInputFields(name, value));
               }}
             ></textarea>
           </div>
@@ -138,7 +145,7 @@ export default function Servicio({something}) {
       </div>
       <div className="w-[95%]">
         <ServicioTable
-          servicio={servicios}
+          servicios={servicios}
           removerServicios={removerServicios}
           setServicios={setServicios}
         />

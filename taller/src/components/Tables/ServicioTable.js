@@ -10,9 +10,9 @@ import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
 import { useState, useRef } from "react";
 import {
-    crearServicio,
-    eliminarServicio,
-    editarServicio,
+  crearServicio,
+  eliminarServicio,
+  editarServicio,
 } from "../../api/Servicio.Controller";
 
 /**
@@ -144,8 +144,6 @@ export default function ServicioTable({
             <th>#</th>
             <th>Nombre</th>
             <th>Descripcion</th>
-            <th>Notas</th>
-            <th>Creado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -153,20 +151,14 @@ export default function ServicioTable({
           {servicios?.length ? (
             servicios.map((servicio, i) => {
               // Declarar una mejor visualizacion.
-              const { id, nombre, descripcion, fechaCreacion } = servicio;
+              const { id, name, descripcion } = servicio;
 
               return (
                 <tr key={i} className="text-center">
-                  <td>{id}</td>
-                  <td>{nombre}</td>
+                  <td>{id ?? null}</td>
+                  <td>{name}</td>
                   <td className="text-sm text-slate-400 text-justify">
                     {descripcion ?? "N/A"}
-                  </td>
-                  <td>
-                    {
-                      /** In DD/MM/YYYY format */
-                      new Date(fechaCreacion).toLocaleDateString()
-                    }
                   </td>
                   <td className="grid grid-cols-2 w-full">
                     <button
@@ -203,7 +195,7 @@ export default function ServicioTable({
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={6}>No hay servicios registrados.</td>
+              <td colSpan={4}>No hay servicios registrados.</td>
             </tr>
           )}
         </tbody>

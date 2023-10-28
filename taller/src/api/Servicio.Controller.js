@@ -38,13 +38,13 @@ export async function buscarServicios() {
 export async function crearServicio(servicio) {
   try {
     // Crear primero la persona.
-    const { data: servicio } = await axios({
+    const { data } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/servicios`,
       data: servicio,
     });
 
-    return servicio;
+    return data;
   } catch (e) {
     console.error(e);
     return null;
