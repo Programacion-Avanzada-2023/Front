@@ -3,22 +3,22 @@ import MarcaTable from "../Tables/MarcaTable";
 import { useState, useRef } from "react";
 import { crearMarca } from "../../api/Marca.Controller";
 
-const formatOptionWithDescription = ({ value, label, nombre }) => (
+const formatOptionWithDescription = ({ value, label, name }) => (
   <div className="flex flex-col">
     <div>{label}</div>
-    <div className="text-sm text-slate-500">{nombre}</div>
+    <div className="text-sm text-slate-500">{name}</div>
   </div>
 );
 
 export default function Marca({ something }) {
   
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
-  const { marcas, setMarca, removerMarca, agregarMarca } =
+  const { marcas, setMarcas, removerMarca, agregarMarca } =
     useMarcaContext();
 
   /** Estado que persiste la escritura de un detalle de la orden (opcional). */
-  const [nombre, setNombre] = useState("");
-  const nombreRef = useRef(nombre);
+  const [name, setname] = useState("");
+  const nameRef = useRef(name);
   const [origen, setOrigen] = useState("");
   const origenRef = useRef(origen);
 
@@ -28,8 +28,9 @@ export default function Marca({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (nombre, origen) => {
-    if (!nombre?.length && !origen?.length) return false;
+  const validateInputFields = (name, origen) => {
+    if (!name?.length) return false;
+    if (!origen?.length || origen?.length < 4) return false;
 
     return true;
   };
@@ -38,10 +39,11 @@ export default function Marca({ something }) {
    * Administra el flujo de ejecucion para la creacion de una nueva orden de trabajo.
    */
   const handleOrderCreation = async () => {
+    if (!name) return;
     // Armar cuerpo requerido para creacion.
     const body = {
-      nombre,
-      origen,
+      name: name,
+      origen: origen ?? null,
     };
 
     setIsLoading(true);
@@ -50,6 +52,7 @@ export default function Marca({ something }) {
     try {
       // Crear la nueva orden.
       const marca = await crearMarca(body);
+      console.log(marca);
 
       // Agregar la nueva orden a la lista de ordenes.
       agregarMarca(marca);
@@ -69,11 +72,11 @@ export default function Marca({ something }) {
   const clearFormFields = () => {
     // Limpiar campos usando las referencias al DOM.
     
-    nombreRef.current.value = "";
+    nameRef.current.value = "";
     origenRef.current.value = "";
 
     // Limpiar estados.
-    setNombre("");
+    setname("");
     setOrigen("");
     setCanCreate(false);
   };
@@ -84,21 +87,23 @@ export default function Marca({ something }) {
         <h1 className="text-xl">Marcas</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">Nombre</span>
+            <span className="text-sm text-slate-600 p-0">name</span>
                 <textarea
                 rows={5}
                 className="w-full rounded-md p-2"
+                isClearable
+                isSearchable
                 placeholder="Opcionalmente, provea una descripcion adicional..."
                 style={{
                     resize: "none",
                 }}
-                ref={nombreRef}
+                ref={nameRef}
                 onChange={(e) => {
                     const value = e.target?.value;
 
-                    setNombre(value?.length ? value : null);
+                    setname(value);
 
-                    //setCanCreate(validateInputFields(value));
+                    setCanCreate(validateInputFields(name, value));
                 }}
                 ></textarea>
           </div>
@@ -143,7 +148,7 @@ export default function Marca({ something }) {
         <MarcaTable
           marcas={marcas}
           removerMarca={removerMarca}
-          setMarca={setMarca}
+          setMarcas={setMarcas}
         />
       </div>
     </div>

@@ -23,6 +23,7 @@
  *
  * @property {number} id
  * @property {string} name
+ * @property {string} origen
  */
 
 /**
@@ -110,7 +111,7 @@ export default function MarcaTable({
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const nombre = orderEditDetailsRef.current.value;
+    const name = orderEditDetailsRef.current.value;
     const origen = orderEditDetailsRef.current.value;
 
     // Actualizar la orden en el contexto.
@@ -119,7 +120,7 @@ export default function MarcaTable({
       const marca = prev.find((m) => m.id === marcaSeleccionada?.id);
 
       // Actualizar la orden con el resultado de la peticion.
-      marca.nombre = nombre;
+      marca.name = name;
       marca.origen = origen;
 
       // Retornar el estado actualizado.
@@ -161,11 +162,11 @@ export default function MarcaTable({
         <Modal.Body>
           <div className="grid grid-cols-1 w-full gap-y-2 mx-2">
             <div>
-              <span className="text-sm text-slate-700">Nombre</span>
+              <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
                 ref={orderEditDetailsRef}
-                defaultValue={marcaSeleccionada?.nombre}
+                defaultValue={marcaSeleccionada?.name}
                 rows={5}
                 style={{
                   resize: "none",
@@ -224,12 +225,12 @@ export default function MarcaTable({
           {marcas?.length ? (
             marcas.map((marca, i) => {
               // Declarar una mejor visualizacion.
-              const { id, nombre, origen  } = marca;
+              const { id, name, origen  } = marca;
 
               return (
                 <tr key={i} className="text-center">
                   <td>{id}</td>
-                  <td>{nombre}</td>
+                  <td>{name}</td>
                   <td>{origen}</td>
                   <td>
                     <a
