@@ -87,7 +87,7 @@ export default function Marca({ something }) {
         <h1 className="text-xl">Marcas</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">name</span>
+            <span className="text-sm text-slate-600 p-0">Nombre</span>
                 <textarea
                 rows={5}
                 className="w-full rounded-md p-2"

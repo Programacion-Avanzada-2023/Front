@@ -1,44 +1,60 @@
 /**
- * @typedef Servicio
+ * @typedef Modelo
  *
  * @property {number} id
  * @property {string} name
- * @property {string} descripcion
+ * @property {Marca} brand
+ * @property {number} year
  */
 
+/**
+ * @typedef Cliente
+ *
+ * @property {number} id
+ * @property {Persona} person
+ */
+
+
+/**
+ * @typedef Automovil
+ *
+ * @property {number} id
+ * @property {Modelo} modelo
+ * @property {Cliente} client
+ * @property {string} licensePlate
+ */
 import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
 import { useState, useRef } from "react";
 import {
-  crearServicio,
-  eliminarServicio,
-  editarServicio,
-} from "../../api/Servicio.Controller";
+  editarAutomovil,
+  eliminarAutomovil,
+} from "../../api/Automovil.Controller";
 
 /**
  *
  * @param {{
- *  servicios: Array<Servicio>
+ *  Automoviles: Array<Modelo>
  * }} props
  * @returns
  */
-export default function ServicioTable({
-  servicios,
-  removerServicios,
-  setServicios,
+export default function AutomovilTable({
+  automoviles,
+  removerAutomoviles,
+  setAutomoviles,
 }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
-  const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
+  const [automovilSeleccionado, setautomovilSeleccionado] = useState(null);
 
   /** Estados y funciones helper para el modal de borrado. */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteModal = async () => {
     // Eliminar la orden.
-    await eliminarServicio(servicioSeleccionado?.id);
+    await eliminarAutomovil(automovilSeleccionado?.id);
 
     // Eliminar la orden del contexto.
-    removerServicios(servicioSeleccionado?.id);
+    removerAutomoviles(automovilSeleccionado?.id);
 
     // Esconder el modal.
     setShowDeleteModal(false);
@@ -49,6 +65,8 @@ export default function ServicioTable({
   const [showEditModal, setShowEditModal] = useState(false);
   const [canEditOrder, setCanEditOrder] = useState(false);
 
+  const handleShowEditModal = () => setShowEditModal(true);
+
   const orderEditDetailsRef = useRef(null);
 
   const handleEditModal = async () => {
@@ -56,32 +74,32 @@ export default function ServicioTable({
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const descripcion = orderEditDetailsRef.current.value;
+    const licensePlate = orderEditDetailsRef.current.value;
 
+    const automovil = await editarAutomovil(automovilSeleccionado?.id, licensePlate);
     // Actualizar la orden en el contexto.
-    setServicios((prev) => {
+    setAutomoviles((prev) => {
       // Buscar la orden original.
-      const servicio = prev.find((s) => s.id === servicioSeleccionado?.id);
+      const automoviles = prev.filter((a) => a.id === automovilSeleccionado?.id);
 
       // Actualizar la orden con el resultado de la peticion.
-      servicio.descripcion = descripcion;
+      /* modelo.name = name;
+      modelo.year = year; */
 
       // Retornar el estado actualizado.
-      return prev;
+      return [...automoviles, automovil];
     });
   };
-
-  const handleShowEditModal = () => setShowEditModal(true);
 
   return (
     <>
       {/** Modal de borrado */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Borrando {servicioSeleccionado?.id}</Modal.Title>
+          <Modal.Title>Borrando {automovilSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Esta por eliminar el servicio <b>{servicioSeleccionado?.id}</b>. ¿Está
+          Esta por eliminar la modelo <b>{automovilSeleccionado?.id}</b>. ¿Está
           seguro?
         </Modal.Body>
         <Modal.Footer>
@@ -100,16 +118,16 @@ export default function ServicioTable({
       {/** Modal de edicion de orden */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editando {servicioSeleccionado?.id}</Modal.Title>
+          <Modal.Title>Editando {automovilSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="grid grid-cols-1 w-full gap-y-2 mx-2">
             <div>
-              <span className="text-sm text-slate-700">Descripcion</span>
+              <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
                 ref={orderEditDetailsRef}
-                defaultValue={servicioSeleccionado?.descripcion}
+                defaultValue={automovilSeleccionado?.licensePlate}
                 rows={5}
                 style={{
                   resize: "none",
@@ -138,28 +156,34 @@ export default function ServicioTable({
         </Modal.Footer>
       </Modal>
 
+      {/** Modal de visualizacion de marcas */}
+
       <Table responsive>
         <thead>
           <tr className="text-center">
             <th>#</th>
-            <th>Nombre</th>
-            <th>Descripcion</th>
+            <th>Patente</th>
+            <th>Modelo</th>
+            <th>Cliente</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {servicios?.length ? (
-            servicios.map((servicio, i) => {
+          {automoviles?.length ? (
+            automoviles.map((automovil, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, descripcion } = servicio;
+              const { id, licensePlate, modelo  } = automovil;
 
               return (
                 <tr key={i} className="text-center">
-                  <td>{id ?? null}</td>
-                  <td>{name}</td>
-                  <td className="text-sm text-slate-400 text-justify">
-                    {descripcion ?? "N/A"}
-                  </td>
+
+                  <td>{id}</td>
+                  <td>{licensePlate}</td>
+                  <td>{modelo?.name ?? "nombre no disponible"}</td>
+                  
+                  <td>{""}</td>
+                  {/* <td>{cliente?.person.name ?? "nombre no disponible"}</td> */}
+
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -167,7 +191,7 @@ export default function ServicioTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
+                        setautomovilSeleccionado(modelo);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -181,11 +205,10 @@ export default function ServicioTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
+                        setautomovilSeleccionado(modelo);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();
-
                       }}
                     >
                       Editar
@@ -196,7 +219,7 @@ export default function ServicioTable({
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={4}>No hay servicios registrados.</td>
+              <td colSpan={6}>No hay modelos registradas.</td>
             </tr>
           )}
         </tbody>

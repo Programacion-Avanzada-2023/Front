@@ -1,44 +1,55 @@
+
 /**
- * @typedef Servicio
+ * @typedef modelo
  *
  * @property {number} id
  * @property {string} name
- * @property {string} descripcion
+ * @property {string} year
+ */
+
+/**
+ * @typedef Modelo
+ *
+ * @property {number} id
+ * @property {string} name
+ * @property {modelo} brand
+ * @property {number} year
  */
 
 import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
 import { useState, useRef } from "react";
 import {
-  crearServicio,
-  eliminarServicio,
-  editarServicio,
-} from "../../api/Servicio.Controller";
+  agregarMarcaAModelo,
+  editarModelo,
+  eliminarModelo,
+  eliminarMarcaDeModelo,
+} from "../../api/Modelo.Controller";
 
 /**
  *
  * @param {{
- *  servicios: Array<Servicio>
+ *  Modelo: Array<Modelo>
  * }} props
  * @returns
  */
-export default function ServicioTable({
-  servicios,
-  removerServicios,
-  setServicios,
+export default function ModeloTable({
+  modelos,
+  removerModelos,
+  setModelos,
 }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
-  const [servicioSeleccionado, setServicioSeleccionado] = useState(null);
+  const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
 
   /** Estados y funciones helper para el modal de borrado. */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteModal = async () => {
     // Eliminar la orden.
-    await eliminarServicio(servicioSeleccionado?.id);
+    await eliminarModelo(modeloSeleccionado?.id);
 
     // Eliminar la orden del contexto.
-    removerServicios(servicioSeleccionado?.id);
+    removerModelos(modeloSeleccionado?.id);
 
     // Esconder el modal.
     setShowDeleteModal(false);
@@ -56,32 +67,36 @@ export default function ServicioTable({
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const descripcion = orderEditDetailsRef.current.value;
+    const name = orderEditDetailsRef.current.value;
+    const year = orderEditDetailsRef.current.value; //-------------------------------------------------
 
+    const modelo = await editarModelo(modeloSeleccionado?.id, name, year);
     // Actualizar la orden en el contexto.
-    setServicios((prev) => {
+    setModelos((prev) => {
       // Buscar la orden original.
-      const servicio = prev.find((s) => s.id === servicioSeleccionado?.id);
+      const modelos = prev.filter((m) => m.id === modeloSeleccionado?.id);
 
       // Actualizar la orden con el resultado de la peticion.
-      servicio.descripcion = descripcion;
+      /* modelo.name = name;
+      modelo.year = year; */
 
       // Retornar el estado actualizado.
-      return prev;
+      return [...modelos, modelo];
     });
   };
 
   const handleShowEditModal = () => setShowEditModal(true);
+  
 
   return (
     <>
       {/** Modal de borrado */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Borrando {servicioSeleccionado?.id}</Modal.Title>
+          <Modal.Title>Borrando {modeloSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Esta por eliminar el servicio <b>{servicioSeleccionado?.id}</b>. ¿Está
+          Esta por eliminar la modelo <b>{modeloSeleccionado?.id}</b>. ¿Está
           seguro?
         </Modal.Body>
         <Modal.Footer>
@@ -100,16 +115,34 @@ export default function ServicioTable({
       {/** Modal de edicion de orden */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editando {servicioSeleccionado?.id}</Modal.Title>
+          <Modal.Title>Editando {modeloSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="grid grid-cols-1 w-full gap-y-2 mx-2">
             <div>
-              <span className="text-sm text-slate-700">Descripcion</span>
+              <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
                 ref={orderEditDetailsRef}
-                defaultValue={servicioSeleccionado?.descripcion}
+                defaultValue={modeloSeleccionado?.name}
+                rows={5}
+                style={{
+                  resize: "none",
+                }}
+                onChange={(e) => {
+                  const value = e.target?.value;
+
+                  // Actualizar el estado.
+                  setCanEditOrder(value?.length ? true : false);
+                }}
+              ></textarea>
+            </div>
+            <div>
+              <span className="text-sm text-slate-700">year</span>
+              <textarea
+                className="w-full p-2 border border-slate-200 rounded-md"
+                ref={orderEditDetailsRef}
+                defaultValue={modeloSeleccionado?.year}
                 rows={5}
                 style={{
                   resize: "none",
@@ -138,28 +171,36 @@ export default function ServicioTable({
         </Modal.Footer>
       </Modal>
 
+
       <Table responsive>
         <thead>
           <tr className="text-center">
             <th>#</th>
             <th>Nombre</th>
-            <th>Descripcion</th>
+            <th>Año</th>
+            <th>Marca</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {servicios?.length ? (
-            servicios.map((servicio, i) => {
+          {modelos?.length ? (
+            modelos.map((modelo, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, descripcion } = servicio;
+              const { id, name, year, marca  } = modelo;
 
               return (
                 <tr key={i} className="text-center">
-                  <td>{id ?? null}</td>
+
+                  <td>{id}</td>
                   <td>{name}</td>
-                  <td className="text-sm text-slate-400 text-justify">
-                    {descripcion ?? "N/A"}
+                  {/* <td>{year}</td> */}
+                  <td>
+                    {
+                      /** In DD/MM/YYYY format */
+                      new Date(year).toLocaleDateString()
+                    }
                   </td>
+                  <td>{marca?.name ?? "nombre no disponible"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -167,7 +208,7 @@ export default function ServicioTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
+                        setModeloSeleccionado(modelo);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -181,11 +222,10 @@ export default function ServicioTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
+                        setModeloSeleccionado(modelo);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();
-
                       }}
                     >
                       Editar
@@ -196,7 +236,7 @@ export default function ServicioTable({
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={4}>No hay servicios registrados.</td>
+              <td colSpan={6}>No hay modelos registradas.</td>
             </tr>
           )}
         </tbody>

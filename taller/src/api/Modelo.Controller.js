@@ -37,6 +37,12 @@ export async function buscarModelos() {
  * @returns {Promise<any>} El modelo insertado.
  */
 export async function crearModelo(modelo) {
+
+  /* const { data } = await axios.post(`${SpringBoot_Api}/modelos`, modelo)
+    .then(result => {return data})
+    .catch(err => {console.error(err); return null;})
+ */
+
   try {
     // Crear primero el modelo.
     const { nombre } = await axios({
@@ -83,13 +89,13 @@ export async function eliminarModelo(id) {
 export async function editarModelo(id) {
   try {
     // Editar primero el modelo.
-    const { data: modelo } = await axios({
+    const { data } = await axios({
       method: "PATCH",
       url: `${SpringBoot_Api}/modelos/${id}`,
-      data: modelo,
+      data: id,
     });
 
-    return modelo;
+    return data;
   } catch (e) {
     console.error(e);
     return null;

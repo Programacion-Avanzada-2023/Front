@@ -40,7 +40,7 @@ export async function crearAutomovil(automovil) {
     // Crear primero la patente.
     const { data } = await axios({
       method: "POST",
-      url: `${SpringBoot_Api}/automovil`,
+      url: `${SpringBoot_Api}/automoviles`,
       data: automovil,
     });
 
@@ -62,7 +62,7 @@ export async function eliminarAutomovil(id) {
   try {
     await axios({
       method: "DELETE",
-      url: `${SpringBoot_Api}/automovil/${id}`,
+      url: `${SpringBoot_Api}/automoviles/${id}`,
     });
 
     return true;
@@ -84,7 +84,7 @@ export async function editarAutomovil(id) {
     // Editar primero la patente.
     const { patente } = await axios({
       method: "PATCH",
-      url: `${SpringBoot_Api}/automovil/${id}`,
+      url: `${SpringBoot_Api}/automoviles/${id}`,
       data: id,
     });
 
