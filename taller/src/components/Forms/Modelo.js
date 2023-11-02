@@ -61,26 +61,8 @@ export default function Modelo({ something }) {
     setCanCreate(false);
 
     try {
-      /* 
-      crearModelo(modelo).then((modelo) => {
-        setShowInsertAlert(true);
-  
-        setModelos([...modelos, modelo]);
-        setModelosFiltrados([...modelosFiltrados, modelo]);
-  
-        setTimeout(() => setShowInsertAlert(false), 1000);
-      });
-      */
       // Crear la nueva orden.
-      console.log(body);
-      const modelo = await crearModelo(
-        body
-      ); /* .then(() => {agregarModelos(modelo)
-        console.log(name, year, marca);
-        console.log(modelo);
-      }) */
-      console.log(name, year, marca);
-      console.log(modelo);
+      const modelo = await crearModelo(body);
 
       // Agregar la nueva orden a la lista de ordenes.
       agregarModelos(modelo);
@@ -170,7 +152,7 @@ export default function Modelo({ something }) {
 
                 return {
                   value: id,
-                  label: `${name} ${origen} `,
+                  label: `${name} ${origen ?? ""}`,
                 };
               })}
               onChange={(value) => {
