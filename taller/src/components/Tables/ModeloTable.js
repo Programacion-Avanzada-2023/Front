@@ -156,20 +156,14 @@ export default function ModeloTable({ modelos, removerModelos, setModelos }) {
           {modelos?.length ? (
             modelos.map((modelo, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, year, marca } = modelo;
+              const { id, name, year, brand } = modelo;
 
               return (
                 <tr key={i} className="text-center">
                   <td>{id}</td>
                   <td>{name}</td>
-                  {/* <td>{year}</td> */}
-                  <td>
-                    {
-                      /** In DD/MM/YYYY format */
-                      new Date(year).toLocaleDateString()
-                    }
-                  </td>
-                  <td>{marca?.name ?? "nombre no disponible"}</td>
+                  <td>{year}</td>
+                  <td>{brand?.name ?? "N/A"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
