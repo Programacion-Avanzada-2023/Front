@@ -1,4 +1,3 @@
-
 /**
  * @typedef modelo
  *
@@ -17,14 +16,8 @@
  */
 
 import { Modal, Button, Table } from "react-bootstrap";
-import Select from "react-select";
 import { useState, useRef } from "react";
-import {
-  agregarMarcaAModelo,
-  editarModelo,
-  eliminarModelo,
-  eliminarMarcaDeModelo,
-} from "../../api/Modelo.Controller";
+import { editarModelo, eliminarModelo } from "../../api/Modelo.Controller";
 
 /**
  *
@@ -33,11 +26,7 @@ import {
  * }} props
  * @returns
  */
-export default function ModeloTable({
-  modelos,
-  removerModelos,
-  setModelos,
-}) {
+export default function ModeloTable({ modelos, removerModelos, setModelos }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
   const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
 
@@ -68,25 +57,25 @@ export default function ModeloTable({
 
     // Obtener el valor del textarea.
     const name = orderEditDetailsRef.current.value;
-    const year = orderEditDetailsRef.current.value; //-------------------------------------------------
 
-    const modelo = await editarModelo(modeloSeleccionado?.id, name, year);
+    const modelo = await editarModelo({
+      ...modeloSeleccionado,
+      name,
+    });
+
     // Actualizar la orden en el contexto.
     setModelos((prev) => {
-      // Buscar la orden original.
-      const modelos = prev.filter((m) => m.id === modeloSeleccionado?.id);
+      // Filtrar todos los modelos menos el editado.
+      const modelos = prev.filter(
+        (modelo) => modelo.id !== modeloSeleccionado?.id
+      );
 
-      // Actualizar la orden con el resultado de la peticion.
-      /* modelo.name = name;
-      modelo.year = year; */
-
-      // Retornar el estado actualizado.
+      // Establecer el estado con el nuevo modelo.
       return [...modelos, modelo];
     });
   };
 
   const handleShowEditModal = () => setShowEditModal(true);
-  
 
   return (
     <>
@@ -137,24 +126,6 @@ export default function ModeloTable({
                 }}
               ></textarea>
             </div>
-            <div>
-              <span className="text-sm text-slate-700">year</span>
-              <textarea
-                className="w-full p-2 border border-slate-200 rounded-md"
-                ref={orderEditDetailsRef}
-                defaultValue={modeloSeleccionado?.year}
-                rows={5}
-                style={{
-                  resize: "none",
-                }}
-                onChange={(e) => {
-                  const value = e.target?.value;
-
-                  // Actualizar el estado.
-                  setCanEditOrder(value?.length ? true : false);
-                }}
-              ></textarea>
-            </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -171,7 +142,6 @@ export default function ModeloTable({
         </Modal.Footer>
       </Modal>
 
-
       <Table responsive>
         <thead>
           <tr className="text-center">
@@ -186,11 +156,10 @@ export default function ModeloTable({
           {modelos?.length ? (
             modelos.map((modelo, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, year, marca  } = modelo;
+              const { id, name, year, marca } = modelo;
 
               return (
                 <tr key={i} className="text-center">
-
                   <td>{id}</td>
                   <td>{name}</td>
                   {/* <td>{year}</td> */}
