@@ -4,6 +4,7 @@
  * @property {number} id
  * @property {string} name
  * @property {string} descripcion
+ * @property {float} precioUnitario
  */
 
 import { Modal, Button, Table } from "react-bootstrap";
@@ -144,6 +145,7 @@ export default function ServicioTable({
             <th>#</th>
             <th>Nombre</th>
             <th>Descripcion</th>
+            <th>Precio Unitario</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -151,7 +153,7 @@ export default function ServicioTable({
           {servicios?.length ? (
             servicios.map((servicio, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, descripcion } = servicio;
+              const { id, name, descripcion, precioUnitario } = servicio;
 
               return (
                 <tr key={i} className="text-center">
@@ -160,6 +162,7 @@ export default function ServicioTable({
                   <td className="text-sm text-slate-400 text-justify">
                     {descripcion ?? "N/A"}
                   </td>
+                  <td>{servicio.precioUnitario ?? "N/A"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -203,4 +206,5 @@ export default function ServicioTable({
       </Table>
     </>
   );
+  
 }
