@@ -71,6 +71,9 @@ import {
   eliminarOrdenDeTrabajo,
   eliminarServicioDeOrdenDeTrabajo,
 } from "../../api/Orden.Controller";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PdfDocument from '../PdfDocument';
+
 
 /**
  *
@@ -299,17 +302,19 @@ export default function OrdenTable({
               <tr className="text-center">
                 <th>#</th>
                 <th>Descripcion</th>
+                <th>Precio Unitario</th>
               </tr>
             </thead>
             <tbody>
               {ordenSeleccionada?.servicios?.length ? (
                 ordenSeleccionada?.servicios.map((servicio, i) => {
-                  const { id, descripcion } = servicio;
+                  const { id, descripcion, precioUnitario } = servicio;
 
                   return (
                     <tr key={i} className="text-center">
                       <td>{id}</td>
                       <td>{descripcion}</td>
+                      <td>{precioUnitario}</td>
                     </tr>
                   );
                 })
@@ -465,35 +470,48 @@ export default function OrdenTable({
                       new Date(fechaCreacion).toLocaleDateString()
                     }
                   </td>
-                  <td className="grid grid-cols-2 w-full">
-                    <button
-                      className="p-1 bg-red-400 text-sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-
-                        // Establecer la orden seleccionada.
-                        setOrdenSeleccionada(orden);
-
-                        // Mostrar modal de borrado.
-                        handleShowDeleteModal();
-                      }}
-                    >
-                      Borrar
-                    </button>
-                    <button
-                      className="p-1 bg-blue-400 text-sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-
-                        // Establecer la orden seleccionada.
-                        setOrdenSeleccionada(orden);
-
-                        // Mostrar modal de edicion.
-                        handleShowEditModal();
-                      }}
-                    >
-                      Editar
-                    </button>
+                  <td className="grid grid-cols-1 w-full" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ marginBottom: '5px', display: 'flex', gap: '5px' }}>
+                      <button
+                        className="p-1 bg-red-400 text-sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          // Establecer la orden seleccionada.
+                          setOrdenSeleccionada(orden);
+                          // Mostrar modal de borrado.
+                          handleShowDeleteModal();
+                        }}
+                      >
+                        Borrar
+                      </button>
+                      <button
+                        className="p-1 bg-blue-400 text-sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          // Establecer la orden seleccionada.
+                          setOrdenSeleccionada(orden);
+                          // Mostrar modal de edicion.
+                          handleShowEditModal();
+                        }}
+                      >
+                        Editar
+                      </button>
+                    </div>
+                    {/**Boton para descargar factura */}
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      {/**En el nombre del archivo aparece el id de la orden igual que en el titulo de la factura */}
+                      <PDFDownloadLink document={<PdfDocument ordenes={[orden]} />} fileName={`Factura_${orden.id}.pdf`}>
+                        {({ loading }) => (
+                          <button
+                            className="p-1 bg-green-500 text-sm text-black"
+                            disabled={loading}
+                            style={{ marginLeft: '5px' }}
+                          >
+                            {loading ? 'Cargando PDF' : 'Descargar Factura'}
+                          </button>
+                        )}
+                      </PDFDownloadLink>
+                    </div>
                   </td>
                 </tr>
               );
