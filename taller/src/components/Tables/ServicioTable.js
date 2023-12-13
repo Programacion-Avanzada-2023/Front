@@ -162,7 +162,7 @@ export default function ServicioTable({
                   <td className="text-sm text-slate-400 text-justify">
                     {descripcion ?? "N/A"}
                   </td>
-                  <td>{servicio.precioUnitario ?? "N/A"}</td>
+                  <td>{precioUnitario ? `AR$ ${precioUnitario}` : "N/A"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -188,7 +188,6 @@ export default function ServicioTable({
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();
-
                       }}
                     >
                       Editar
@@ -206,5 +205,4 @@ export default function ServicioTable({
       </Table>
     </>
   );
-  
 }

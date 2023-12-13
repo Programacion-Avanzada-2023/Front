@@ -314,7 +314,7 @@ export default function OrdenTable({
                     <tr key={i} className="text-center">
                       <td>{id}</td>
                       <td>{descripcion}</td>
-                      <td>{precioUnitario}</td>
+                      <td>{precioUnitario ? `AR$ ${precioUnitario}` : 'N/A'}</td>
                     </tr>
                   );
                 })

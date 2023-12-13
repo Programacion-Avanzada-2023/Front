@@ -11,6 +11,7 @@ import ClienteWrapper from "./components/Wrappers/ClienteWrapper";
 import ModeloWrapper from "./components/Wrappers/ModeloWrapper";
 import AutomovilWrapper from "./components/Wrappers/AutomovilWrapper";
 import OrdenDeTrabajoWrapper from "./components/Wrappers/OrdenDeTrabajoWrapper";
+import PdfDocument from "./components/PdfDocument";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/ordenTrabajo" element={<OrdenDeTrabajoWrapper />} />
           <Route path="/servicio" element={<ServicioWrapper />} />
           <Route path="/home" element={<Navigate to="/" />} />
+          <Route path="/test" element={<PdfDocument />} />
         </Routes>
       </div>
     </Router>
