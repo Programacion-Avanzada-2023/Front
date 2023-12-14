@@ -500,11 +500,18 @@ export default function OrdenTable({
                     {/**Boton para descargar factura */}
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                       {/**En el nombre del archivo aparece el id de la orden igual que en el titulo de la factura */}
-                      <PDFDownloadLink document={<PdfDocument ordenes={[orden]} />} fileName={`Factura_${orden.id}.pdf`}>
-                        {({ loading }) => (
+                      <PDFDownloadLink
+                        document={<PdfDocument ordenes={[orden]} />}
+                        fileName={`Factura_${orden.id}.pdf`}
+                      >
+                        {({ blob, url, loading, error }) => (
                           <button
                             className="p-1 bg-green-500 text-sm text-black"
                             disabled={loading}
+                            onClick={(e) => {
+                              if (loading) return; // Evitar múltiples clics mientras se genera el PDF
+                              // Puedes agregar acciones adicionales aquí si es necesario
+                            }}
                             style={{ marginLeft: '5px' }}
                           >
                             {loading ? 'Cargando PDF' : 'Descargar Factura'}
