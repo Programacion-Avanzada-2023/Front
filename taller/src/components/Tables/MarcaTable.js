@@ -24,6 +24,7 @@
  * @property {number} id
  * @property {string} name
  * @property {string} origen
+ * @property {float} impuestoMarca
  */
 
 /**
@@ -50,6 +51,7 @@
  * @property {number} id
  * @property {string} name
  * @property {string} descripcion
+ * @property {float} precioUnitario
  */
 
 /**
@@ -111,7 +113,7 @@ export default function MarcaTable({
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const name = orderEditDetailsRef.current.value;
+    //const name = orderEditDetailsRef.current.value;
     const origen = orderEditDetailsRef.current.value;
 
     // Actualizar la orden en el contexto.
@@ -120,7 +122,6 @@ export default function MarcaTable({
       const marca = prev.find((m) => m.id === marcaSeleccionada?.id);
 
       // Actualizar la orden con el resultado de la peticion.
-      marca.name = name;
       marca.origen = origen;
 
       // Retornar el estado actualizado.
@@ -219,19 +220,23 @@ export default function MarcaTable({
             <th>#</th>
             <th>Nombre</th>
             <th>Origen</th>
+            <th>Impuesto</th>
           </tr>
         </thead>
         <tbody>
           {marcas?.length ? (
             marcas.map((marca, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, origen  } = marca;
-
+              const { id, name, origen, impuestoMarca  } = marca || {};
+              console.log(marca);
               return (
                 <tr key={i} className="text-center">
-                  <td>{id}</td>
+                  <td>{id ?? null}</td>
                   <td>{name}</td>
-                  <td>{origen}</td>
+                  <td>
+                    {origen ?? "N/A"}
+                  </td>
+                  <td>{impuestoMarca ? `${impuestoMarca}%` : "N/A"}</td>
                   <td>
                     <a
                       href="#"

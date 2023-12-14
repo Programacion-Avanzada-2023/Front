@@ -21,6 +21,8 @@ export default function Marca({ something }) {
   const nameRef = useRef(name);
   const [origen, setOrigen] = useState("");
   const origenRef = useRef(origen);
+  const [impuestoMarca, setImpuestoMarca] = useState("");
+  const impuestoRef = useRef(impuestoMarca);
 
   /** Estado que determina si algo esta cargando. */
   const [isLoading, setIsLoading] = useState(false);
@@ -28,10 +30,17 @@ export default function Marca({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (name, origen) => {
+  const validateInputFields = (name, origen, impuestoMarca) => {
     if (!name?.length) return false;
     if (!origen?.length || origen?.length < 4) return false;
+    if (!impuestoMarca || impuestoMarca <= 0) {
+      return false; // Indicar que los campos no son válidos
+    }
+    const decimalRegex = /^\d+(\.\d{1,2})?$/;
 
+    if (!decimalRegex.test(impuestoMarca.toString())) {
+      return false; // No es un número decimal válido
+    }
     return true;
   };
 
@@ -39,33 +48,31 @@ export default function Marca({ something }) {
    * Administra el flujo de ejecucion para la creacion de una nueva orden de trabajo.
    */
   const handleOrderCreation = async () => {
-    if (!name) return;
+    if (!name || !origen || !impuestoMarca) return;
+
+    const isValidFields = validateInputFields(name, origen, impuestoMarca);
     // Armar cuerpo requerido para creacion.
-    const body = {
-      name: name,
-      origen: origen ?? null,
-    };
-
-    setIsLoading(true);
-    setCanCreate(false);
-
-    try {
-      // Crear la nueva orden.
-      const marca = await crearMarca(body);
-      console.log(marca);
-
-      // Agregar la nueva orden a la lista de ordenes.
-      agregarMarca(marca);
-    } catch (e) {
-      console.error(e);
+    if (isValidFields) {
+      const body = {
+        name: name,
+        origen: origen ?? null,
+        impuestoMarca: impuestoMarca,
+      };
+  
+      setIsLoading(true);
+      setCanCreate(false);
+  
+      try {
+        const marca = await crearMarca(body);
+        agregarMarca(marca);
+      } catch (e) {
+        console.error(e);
+      }
+  
+      setIsLoading(false);
+      clearFormFields();
     }
-
-    // Resettear estados de control de flujo.
-    setIsLoading(false);
-    setCanCreate(true);
-    clearFormFields();
-  };
-
+  }
   /**
    * Limpia los campos del formulario.
    */
@@ -74,12 +81,15 @@ export default function Marca({ something }) {
     
     nameRef.current.value = "";
     origenRef.current.value = "";
+    impuestoRef.current.value = "";
 
     // Limpiar estados.
     setname("");
     setOrigen("");
+    setImpuestoMarca("");
     setCanCreate(false);
   };
+
 
   return (
     <div className="grid grid-cols-2 gap-4 w-full mx-4">
@@ -87,13 +97,15 @@ export default function Marca({ something }) {
         <h1 className="text-xl">Marcas</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">Nombre</span>
+              <label className="text-sm text-slate-600">
+                Nombre <span className="text-red-400">*</span>
+              </label>
                 <textarea
                 rows={5}
                 className="w-full rounded-md p-2"
                 isClearable
                 isSearchable
-                placeholder="Opcionalmente, provea una descripcion adicional..."
+                placeholder="Introduzca nombre de la marca"
                 style={{
                     resize: "none",
                 }}
@@ -108,7 +120,9 @@ export default function Marca({ something }) {
                 ></textarea>
           </div>
           <div className="w-full py-1">
-          <span className="text-sm text-slate-600 p-0">Origen</span>
+            <label className="text-sm text-slate-600">
+                  Origen <span className="text-red-400">*</span>
+                </label>
             <textarea
               rows={5}
               className="w-full rounded-md p-2"
@@ -126,12 +140,29 @@ export default function Marca({ something }) {
             ></textarea>
           </div>
         </div>
+        <div className="flex flex-col">
+            <label className="text-sm text-slate-600">
+              Impuesto<span className="text-red-400">*</span>
+            </label>
+            <input
+              type="number"
+              className="p-1 rounded-md"
+              placeholder="Introduzca el impuesto de la marca"
+              value={impuestoMarca}
+              ref={impuestoRef}
+              onChange={(e) => {
+                const value = e.target.value;
+                setImpuestoMarca(value);
+                setCanCreate(validateInputFields(name, origen, value));
+              }}
+            />
+          </div>
         <div className="w-full grid grid-cols-3 gap-x-2">
           <button
             className={`w-full p-2 ${
-              canCreate ? "bg-blue-500" : "bg-blue-300"
+              name && origen && impuestoMarca && validateInputFields(name, origen, impuestoMarca) ? "bg-blue-500" : "bg-blue-300"
             } rounded-xl text-white font-semibold col-span-2`}
-            disabled={!canCreate}
+            disabled={!name || !origen || !impuestoMarca || !validateInputFields(name, origen, impuestoMarca)}
             onClick={handleOrderCreation}
           >
             Crear Nueva
