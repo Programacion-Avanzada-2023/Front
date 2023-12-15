@@ -14,7 +14,6 @@
  * @property {Persona} person
  */
 
-
 /**
  * @typedef Automovil
  *
@@ -76,11 +75,16 @@ export default function AutomovilTable({
     // Obtener el valor del textarea.
     const licensePlate = orderEditDetailsRef.current.value;
 
-    const automovil = await editarAutomovil(automovilSeleccionado?.id, licensePlate);
+    const automovil = await editarAutomovil(
+      automovilSeleccionado?.id,
+      licensePlate
+    );
     // Actualizar la orden en el contexto.
     setAutomoviles((prev) => {
       // Buscar la orden original.
-      const automoviles = prev.filter((a) => a.id === automovilSeleccionado?.id);
+      const automoviles = prev.filter(
+        (a) => a.id === automovilSeleccionado?.id
+      );
 
       // Actualizar la orden con el resultado de la peticion.
       /* modelo.name = name;
@@ -172,17 +176,14 @@ export default function AutomovilTable({
           {automoviles?.length ? (
             automoviles.map((automovil, i) => {
               // Declarar una mejor visualizacion.
-              const { id, licensePlate, modelo  } = automovil;
+              const { id, licensePlate, model, client } = automovil;
 
               return (
                 <tr key={i} className="text-center">
-
                   <td>{id}</td>
                   <td>{licensePlate}</td>
-                  <td>{modelo?.name ?? "nombre no disponible"}</td>
-                  
-                  <td>{""}</td>
-                  {/* <td>{cliente?.person.name ?? "nombre no disponible"}</td> */}
+                  <td>{model?.name ?? "nombre no disponible"}</td>
+                  <td>{client?.person?.name} {client?.person?.surName}</td>
 
                   <td className="grid grid-cols-2 w-full">
                     <button
@@ -191,7 +192,7 @@ export default function AutomovilTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setautomovilSeleccionado(modelo);
+                        setautomovilSeleccionado(model);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -205,7 +206,7 @@ export default function AutomovilTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setautomovilSeleccionado(modelo);
+                        setautomovilSeleccionado(model);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();

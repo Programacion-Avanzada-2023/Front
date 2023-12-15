@@ -14,20 +14,24 @@ import { crearAutomovil } from "../../api/Automovil.Controller";
 );
  */
 export default function Automovil({ something }) {
-
-
   const { modelos } = useModeloContext();
 
   const { clientes } = useClienteContext();
 
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
-  const { Automovil, setAutomoviles, removerAutomoviles, agregarAutomoviles } =
-    useAutomovilContext();
+  const {
+    automoviles,
+    setAutomoviles,
+    removerAutomovil,
+    agregarAutomovil,
+  } = useAutomovilContext();
 
   const [modelo, setModelo] = useState();
   const modeloRef = useRef(modelo);
   const [cliente, setCliente] = useState();
   const clienteRef = useRef(cliente);
+  const [kilometraje, setKilometraje] = useState(0);
+  const kilometrajeRef = useRef(kilometraje);
 
   /** Estado que persiste la escritura de un detalle de la orden (opcional). */
   const [licensePlate, setLicensePlate] = useState("");
@@ -39,8 +43,22 @@ export default function Automovil({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (licensePlate) => {
-    if (!licensePlate) return false;
+  const validateInputFields = () => {
+    const licensePlate = licensePlateRef.current.value;
+    const modelo = modeloRef.current.getValue();
+    const cliente = clienteRef.current.getValue();
+    const kilometraje = kilometrajeRef.current.value;
+
+    if (!licensePlate?.length) return false;
+    if (
+      !/^([A-Za-z]{3}[0-9]{3}|[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}|[A-Za-z]{2}\\-[0-9]{4}|[A-Za-z][0-9]{3}[A-Za-z]{3}|[A-Za-z][0-9]{6})$/.test(
+        licensePlate
+      )
+    )
+      return false;
+    if (!modelo?.length) return false;
+    if (!cliente?.length) return false;
+    if (kilometraje < 0) return false;
 
     return true;
   };
@@ -48,12 +66,13 @@ export default function Automovil({ something }) {
   /**
    * Administra el flujo de ejecucion para la creacion de una nueva orden de trabajo.
    */
-  const handleOrderCreation = async () => {    
+  const handleOrderCreation = async () => {
     // Armar cuerpo requerido para creacion.
     const body = {
-      license: licensePlate,
-      modelo,
-      cliente,
+      licensePlate,
+      model: modelo,
+      client: cliente,
+      km: kilometraje,
     };
 
     setIsLoading(true);
@@ -62,7 +81,9 @@ export default function Automovil({ something }) {
     try {
       // Crear la nueva orden.
       console.log(body);
-      const automovil = await crearAutomovil(body)/* .then(() => {agregarModelos(modelo)
+      const automovil = await crearAutomovil(
+        body
+      ); /* .then(() => {agregarModelos(modelo)
         console.log(name, year, marca);
         console.log(modelo);
       }) */
@@ -70,7 +91,7 @@ export default function Automovil({ something }) {
       console.log(automovil);
 
       // Agregar la nueva orden a la lista de ordenes.
-      agregarAutomoviles(automovil);
+      agregarAutomovil(automovil);
     } catch (e) {
       console.error(e);
     }
@@ -90,12 +111,14 @@ export default function Automovil({ something }) {
     modeloRef.current.clearValue();
     clienteRef.current.clearValue();
     licensePlateRef.current.value = "";
+    kilometrajeRef.current.value = 0;
 
     // Limpiar estados.
     setModelo(null);
     setCliente(null);
     setLicensePlate("");
     setCanCreate(false);
+    setKilometraje(0);
   };
 
   return (
@@ -104,100 +127,112 @@ export default function Automovil({ something }) {
         <h1 className="text-xl">Automovil</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">Patente</span>
-                <textarea
-                rows={5}
-                className="w-full rounded-md p-2"
-                isClearable
-                isSearchable
-                placeholder="Opcionalmente, provea una descripcion adicional..."
-                style={{
-                    resize: "none",
-                }}
-                ref={licensePlateRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+            <span className="text-sm text-slate-600 p-0">
+              Patente <span className="text-red-400">*</span>
+            </span>
+            <textarea
+              rows={5}
+              className="w-full rounded-md p-2"
+              isClearable
+              isSearchable
+              placeholder="Opcionalmente, provea una descripcion adicional..."
+              style={{
+                resize: "none",
+              }}
+              ref={licensePlateRef}
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setLicensePlate(value);
+                setLicensePlate(value);
 
-                    setCanCreate(validateInputFields(licensePlate, value));
-                }}
-                ></textarea>
+                setCanCreate(validateInputFields());
+              }}
+            ></textarea>
           </div>
-            <div className="w-full py-1">
-                <span className="text-sm text-slate-600 p-0">
-                Modelo <span className="text-red-400">*</span>
-                </span>
-                <Select
-                isClearable
-                isSearchable
-                placeholder="Seleccione un modelo"
-                ref={modeloRef}
-                options={modelos.map((modelo) => {
-                    // Obtener modelo y marca.
-                    const {
-                    id,
-                    name,
-                    year,
-                    } = modelo;
+          <div className="w-full py-1 flex flex-col gap-2">
+            <span className="text-sm text-slate-600 p-0">
+              Kilometraje <span className="text-red-400">*</span>
+            </span>
+            <input
+              type="number"
+              step={150}
+              ref={kilometrajeRef}
+              defaultValue={0}
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    return {
-                    value: id,
-                    label: `${name} ${year} `,
-                    };
-                })}
-                onChange={(value) => {
-                  if (value) {
+                setKilometraje(+value);
 
-                    const id = value?.value ?? null;
-
-                    setModelo(id);
-                    setCanCreate(true);
-                  } 
-
-                    // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
-                }}
-                isMulti = {false}
-                ></Select>
+                setCanCreate(validateInputFields());
+              }}
+              className="p-1 rounded-md"
+            />
           </div>
           <div className="w-full py-1">
-                <span className="text-sm text-slate-600 p-0">
-                Cliente <span className="text-red-400">*</span>
-                </span>
-                <Select
-                isClearable
-                isSearchable
-                placeholder="Seleccione un cliente"
-                ref={clienteRef}
-                options={clientes.map((cliente) => {
-                    // Obtener modelo y marca.
-                    const {
-                    id,
-                    name,
-                    surName,
-                    dni,
-                    } = cliente;
+            <span className="text-sm text-slate-600 p-0">
+              Modelo <span className="text-red-400">*</span>
+            </span>
+            <Select
+              isClearable
+              isSearchable
+              placeholder="Seleccione un modelo"
+              ref={modeloRef}
+              options={modelos.map((modelo) => {
+                // Obtener modelo y marca.
+                const { id, name, year } = modelo;
 
-                    return {
-                    value: id,
-                    label: `${name} ${surName} ${dni} `,
-                    };
-                })}
-                onChange={(value) => {
-                  if (value) {
+                return {
+                  value: id,
+                  label: `${name} ${year} `,
+                };
+              })}
+              onChange={(value) => {
+                if (value) {
+                  const id = value?.value ?? null;
 
-                    const id = value?.value ?? null;
+                  setModelo(id);
+                  setCanCreate(validateInputFields());
+                }
 
-                    setCliente(id);
-                    setCanCreate(true);
-                  } 
-
-                    // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
-                }}
-                isMulti = {false}
-                ></Select>
+                // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
+              }}
+              isMulti={false}
+            ></Select>
           </div>
+          <div className="w-full py-1">
+            <span className="text-sm text-slate-600 p-0">
+              Cliente <span className="text-red-400">*</span>
+            </span>
+            <Select
+              isClearable
+              isSearchable
+              placeholder="Seleccione un cliente"
+              ref={clienteRef}
+              options={clientes.map((cliente) => {
+                // Obtener modelo y marca.
+                const {
+                  id,
+                  person: { name, surName, dni },
+                } = cliente;
 
+                return {
+                  value: id,
+                  label: `${name} ${surName} ${dni} `,
+                };
+              })}
+              onChange={(value) => {
+                if (value) {
+                  const id = value?.value ?? null;
+
+                  setCliente(id);
+                  setCanCreate(validateInputFields());
+                }
+
+                // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
+              }}
+              isMulti={false}
+            ></Select>
+          </div>
         </div>
         <div className="w-full grid grid-cols-3 gap-x-2">
           <button
@@ -219,8 +254,8 @@ export default function Automovil({ something }) {
       </div>
       <div className="w-[95%]">
         <AutomovilTable
-          automoviles={modelos}
-          removerAutomoviles={removerAutomoviles}
+          automoviles={automoviles}
+          removerAutomoviles={removerAutomovil}
           setAutomoviles={setAutomoviles}
         />
       </div>

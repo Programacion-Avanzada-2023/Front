@@ -68,9 +68,7 @@
 import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
 import { useState, useRef } from "react";
-import {
-  eliminarMarca
-} from "../../api/Marca.Controller";
+import { eliminarMarca } from "../../api/Marca.Controller";
 
 /**
  *
@@ -79,11 +77,7 @@ import {
  * }} props
  * @returns
  */
-export default function MarcaTable({
-  marcas,
-  removerMarca,
-  setMarcas,
-}) {
+export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
   const [marcaSeleccionada, setMarcaSeleccionada] = useState(null);
 
@@ -221,36 +215,21 @@ export default function MarcaTable({
             <th>Nombre</th>
             <th>Origen</th>
             <th>Impuesto</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {marcas?.length ? (
             marcas.map((marca, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, origen, impuestoMarca  } = marca || {};
+              const { id, name, origen, impuestoMarca } = marca || {};
               console.log(marca);
               return (
                 <tr key={i} className="text-center">
-                  <td>{id ?? null}</td>
+                  <td>{id}</td>
                   <td>{name}</td>
-                  <td>
-                    {origen ?? "N/A"}
-                  </td>
+                  <td>{origen?.length ? origen : "No Especifica"}</td>
                   <td>{impuestoMarca ? `${impuestoMarca}%` : "N/A"}</td>
-                  <td>
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-
-                        // Establecer la orden seleccionada.
-                        setMarcaSeleccionada(marca);
-
-                      }}
-                    >
-                      Ver
-                    </a>
-                  </td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"

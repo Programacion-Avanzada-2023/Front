@@ -305,6 +305,13 @@ export function TablaClientes({
                     >
                       Eliminar
                     </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => (window.location.href = `/clientes/${id}`)}
+                    >
+                      Ver Ordenes
+                    </Button>
                   </Col>
                   <Col className="custom-col">
                     <Button

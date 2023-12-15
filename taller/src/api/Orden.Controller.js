@@ -149,3 +149,23 @@ export async function eliminarServicioDeOrdenDeTrabajo(id, servicioId) {
     return null;
   }
 }
+
+/**
+ * Busca las ordenes de trabajo por un cliente específico.
+ *
+ * @param {number} idCliente
+ *
+ * @returns {Promise<Orden[]>}
+ */
+export async function buscarOrdenesPorCliente(idCliente) {
+  try {
+    const { data } = await axios({
+      method: "GET",
+      url: `${SpringBoot_Api}/ordenes/cliente/${idCliente}`,
+    });
+
+    return data;
+  } catch (e) {
+    console.error(`Fallo al buscar ordenes de cliente ${idCliente}: ${e}`);
+  }
+}
