@@ -71,9 +71,8 @@ import {
   eliminarOrdenDeTrabajo,
   eliminarServicioDeOrdenDeTrabajo,
 } from "../../api/Orden.Controller";
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import PdfDocument from '../PdfDocument';
-
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PdfDocument from "../PdfDocument";
 
 /**
  *
@@ -87,6 +86,9 @@ export default function OrdenTable({
   removerOrdenes,
   servicios,
   setOrdenes,
+  confirmarOrden,
+  tecnicos,
+  asignarTecnico,
 }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
@@ -120,7 +122,9 @@ export default function OrdenTable({
     const detalles = orderEditDetailsRef.current.value;
 
     // Actualizar la orden.
-    const orden = await editarOrdenDeTrabajo(ordenSeleccionada.id, detalles);
+    const orden = await editarOrdenDeTrabajo(ordenSeleccionada.id, {
+      detalles,
+    });
 
     // Actualizar la orden en el contexto.
     setOrdenes((prev) => {
@@ -272,6 +276,32 @@ export default function OrdenTable({
                 }}
               ></textarea>
             </div>
+            <div>
+              <div className="flex flex-col">
+                <span className="text-sm text-slate-700">
+                  Técnico Responsable
+                </span>
+                <span className="text-xs text-slate-500">
+                  Recuerda que siempre y cuando la órden no esté confirmada
+                  podrás cambiar al técnico responsable.
+                </span>
+              </div>
+              <Select
+                isClearable
+                isSearchable
+                placeholder="Seleccione un técnico nuevo"
+                options={tecnicos.map((tecnico) => ({
+                  value: tecnico.id,
+                  label: `${tecnico.person.name} ${tecnico.person.surName}`,
+                }))}
+                onChange={(value) => {
+                  const id = value?.value ?? null;
+
+                  // Asignar al nuevo técnico a la orden.
+                  asignarTecnico(id, ordenSeleccionada.id);
+                }}
+              ></Select>
+            </div>
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -314,7 +344,9 @@ export default function OrdenTable({
                     <tr key={i} className="text-center">
                       <td>{id}</td>
                       <td>{descripcion}</td>
-                      <td>{precioUnitario ? `AR$ ${precioUnitario}` : 'N/A'}</td>
+                      <td>
+                        {precioUnitario ? `AR$ ${precioUnitario}` : "N/A"}
+                      </td>
                     </tr>
                   );
                 })
@@ -326,102 +358,106 @@ export default function OrdenTable({
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer>
-          <div className="flex flex-col w-full gap-y-2">
-            <div>
-              <span className="text-sm text-slate-700">Agregar servicios</span>
-              <Select
-                isMulti
-                isClearable
-                ref={serviciosAgregarRef}
-                options={servicios.map((servicio) => {
-                  // Filtrar los servicios que ya estan en la orden.
-                  const isInOrden = ordenSeleccionada?.servicios
-                    ?.map((s) => s.id)
-                    .includes(servicio.id);
-
-                  return {
-                    value: servicio.id,
-                    label: servicio.name,
-                    description: servicio.descripcion,
-                    isDisabled: isInOrden,
-                  };
-                })}
-                onChange={(e) => {
-                  // Validar que la orden no tenga todos los servicios.
-                  const canAdd =
-                    e?.length < servicios?.length &&
-                    e?.length > 0 &&
-                    e?.length + ordenSeleccionada?.servicios?.length <=
-                      servicios?.length;
-
-                  // Actualizar el estado.
-                  setCanAddServices(canAdd);
-                }}
-              ></Select>
-              <Button
-                variant="primary"
-                className="mt-2 w-full"
-                onClick={handleAddServiceToOrder}
-                disabled={!canAddServices}
-              >
-                Agregar a Orden
-              </Button>
-            </div>
-            <div>
-              <div className="flex flex-col my-1">
+        {ordenSeleccionada?.confirmada ? null : (
+          <Modal.Footer>
+            <div className="flex flex-col w-full gap-y-2">
+              <div>
                 <span className="text-sm text-slate-700">
-                  Remover servicios
+                  Agregar servicios
                 </span>
-                <span className="text-xs text-slate-500">
-                  Recuerda: No puedes sacar todos los servicios de una orden.
-                  Debes dejar al menos uno.
-                </span>
+                <Select
+                  isMulti
+                  isClearable
+                  ref={serviciosAgregarRef}
+                  options={servicios.map((servicio) => {
+                    // Filtrar los servicios que ya estan en la orden.
+                    const isInOrden = ordenSeleccionada?.servicios
+                      ?.map((s) => s.id)
+                      .includes(servicio.id);
+
+                    return {
+                      value: servicio.id,
+                      label: servicio.name,
+                      description: servicio.descripcion,
+                      isDisabled: isInOrden,
+                    };
+                  })}
+                  onChange={(e) => {
+                    // Validar que la orden no tenga todos los servicios.
+                    const canAdd =
+                      e?.length < servicios?.length &&
+                      e?.length > 0 &&
+                      e?.length + ordenSeleccionada?.servicios?.length <=
+                        servicios?.length;
+
+                    // Actualizar el estado.
+                    setCanAddServices(canAdd);
+                  }}
+                ></Select>
+                <Button
+                  variant="primary"
+                  className="mt-2 w-full"
+                  onClick={handleAddServiceToOrder}
+                  disabled={!canAddServices}
+                >
+                  Agregar a Orden
+                </Button>
               </div>
-              <Select
-                isMulti
-                isClearable
-                ref={serviciosBorrarRef}
-                options={servicios.map((servicio) => {
-                  // Filtrar los servicios que ya estan en la orden.
-                  const isInOrden = ordenSeleccionada?.servicios
-                    ?.map((s) => s.id)
-                    .includes(servicio.id);
+              <div>
+                <div className="flex flex-col my-1">
+                  <span className="text-sm text-slate-700">
+                    Remover servicios
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    Recuerda: No puedes sacar todos los servicios de una orden.
+                    Debes dejar al menos uno.
+                  </span>
+                </div>
+                <Select
+                  isMulti
+                  isClearable
+                  ref={serviciosBorrarRef}
+                  options={servicios.map((servicio) => {
+                    // Filtrar los servicios que ya estan en la orden.
+                    const isInOrden = ordenSeleccionada?.servicios
+                      ?.map((s) => s.id)
+                      .includes(servicio.id);
 
-                  return {
-                    value: servicio.id,
-                    label: servicio.name,
-                    description: servicio.descripcion,
-                    isDisabled: !isInOrden,
-                  };
-                })}
-                onChange={(e) => {
-                  // Validar si la cantidad de servicios a remover es igual a la cantidad de servicios en la orden.
-                  const canRemove =
-                    e?.length < ordenSeleccionada?.servicios?.length &&
-                    e?.length > 0;
+                    return {
+                      value: servicio.id,
+                      label: servicio.name,
+                      description: servicio.descripcion,
+                      isDisabled: !isInOrden,
+                    };
+                  })}
+                  onChange={(e) => {
+                    // Validar si la cantidad de servicios a remover es igual a la cantidad de servicios en la orden.
+                    const canRemove =
+                      e?.length < ordenSeleccionada?.servicios?.length &&
+                      e?.length > 0;
 
-                  // Actualizar el estado.
-                  setCanRemoveServices(canRemove);
-                }}
-              ></Select>
-              {!canRemoveServices ? (
-                <span className="text-xs text-red-400">
-                  No puedes dejar a la orden sin servicios, o debes seleccionar
-                  al menos uno.
-                </span>
-              ) : null}
-              <Button
-                variant="danger"
-                className="mt-2 w-full"
-                disabled={!canRemoveServices}
-                onClick={handleRemoveServiceFromOrder}
-              >
-                Remover de Orden
-              </Button>
+                    // Actualizar el estado.
+                    setCanRemoveServices(canRemove);
+                  }}
+                ></Select>
+                {!canRemoveServices ? (
+                  <span className="text-xs text-red-400">
+                    No puedes dejar a la orden sin servicios, o debes
+                    seleccionar al menos uno.
+                  </span>
+                ) : null}
+                <Button
+                  variant="danger"
+                  className="mt-2 w-full"
+                  disabled={!canRemoveServices}
+                  onClick={handleRemoveServiceFromOrder}
+                >
+                  Remover de Orden
+                </Button>
+              </div>
             </div>
-          </div>
-        </Modal.Footer>
+          </Modal.Footer>
+        )}
       </Modal>
 
       <Table responsive>
@@ -429,9 +465,11 @@ export default function OrdenTable({
           <tr className="text-center">
             <th>#</th>
             <th>Automovil</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
             <th>Servicios</th>
             <th>Notas</th>
-            <th>Creado</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -439,15 +477,28 @@ export default function OrdenTable({
           {ordenes?.length ? (
             ordenes.map((orden, i) => {
               // Declarar una mejor visualizacion.
-              const { id, automovil, detalles, fechaCreacion } = orden;
+              const { id, automovil, detalles, estado, confirmada, tecnico } =
+                orden;
 
               return (
-                <tr key={i} className="text-center">
+                <tr
+                  key={i}
+                  className={`text-center ${confirmada ? "bg-green-200" : ""}`}
+                >
                   <td>{id}</td>
-                  <td>{automovil.licensePlate}</td>
+                  <td>{`${automovil.model.brand.name} ${automovil.model.name} (${automovil.model.year}) - ${automovil.licensePlate}`}</td>
                   <td>
-                    <a
-                      href="#"
+                    {automovil.client.person.name}{" "}
+                    {automovil.client.person.surName}
+                  </td>
+                  <td>
+                    {tecnico
+                      ? `${tecnico.person.name} ${tecnico.person.surName}`
+                      : "N/A"}
+                  </td>
+                  <td>
+                    <button
+                      className="text-blue-400 underline"
                       onClick={(e) => {
                         e.preventDefault();
 
@@ -459,19 +510,27 @@ export default function OrdenTable({
                       }}
                     >
                       Ver
-                    </a>
+                    </button>
                   </td>
                   <td className="text-sm text-slate-400 text-justify">
                     {detalles ?? "N/A"}
                   </td>
-                  <td>
-                    {
-                      /** In DD/MM/YYYY format */
-                      new Date(fechaCreacion).toLocaleDateString()
-                    }
-                  </td>
-                  <td className="grid grid-cols-1 w-full" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ marginBottom: '5px', display: 'flex', gap: '5px' }}>
+                  <td>{estado}</td>
+                  <td
+                    className="grid grid-cols-1 w-full"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      style={{
+                        marginBottom: "5px",
+                        display: "flex",
+                        gap: "5px",
+                      }}
+                    >
                       <button
                         className="p-1 bg-red-400 text-sm"
                         onClick={(e) => {
@@ -485,7 +544,8 @@ export default function OrdenTable({
                         Borrar
                       </button>
                       <button
-                        className="p-1 bg-blue-400 text-sm"
+                        disabled={confirmada}
+                        className="p-1 bg-blue-400 disabled:bg-blue-800 text-sm"
                         onClick={(e) => {
                           e.preventDefault();
                           // Establecer la orden seleccionada.
@@ -496,9 +556,23 @@ export default function OrdenTable({
                       >
                         Editar
                       </button>
+                      <button
+                        disabled={confirmada || tecnico === null}
+                        className="p-1 bg-green-400 text-sm disabled:bg-green-800"
+                        onClick={(e) => {
+                          if (confirmada) return;
+
+                          e.preventDefault();
+
+                          // Confirmar la orden.
+                          confirmarOrden(id, true);
+                        }}
+                      >
+                        Confirmar
+                      </button>
                     </div>
                     {/**Boton para descargar factura */}
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
                       {/**En el nombre del archivo aparece el id de la orden igual que en el titulo de la factura */}
                       <PDFDownloadLink
                         document={<PdfDocument ordenes={[orden]} />}
@@ -512,9 +586,9 @@ export default function OrdenTable({
                               if (loading) return; // Evitar múltiples clics mientras se genera el PDF
                               // Puedes agregar acciones adicionales aquí si es necesario
                             }}
-                            style={{ marginLeft: '5px' }}
+                            style={{ marginLeft: "5px" }}
                           >
-                            {loading ? 'Cargando PDF' : 'Descargar Factura'}
+                            {loading ? "Cargando PDF" : "Descargar Factura"}
                           </button>
                         )}
                       </PDFDownloadLink>

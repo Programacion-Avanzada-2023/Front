@@ -83,6 +83,7 @@ const MyDocument = ({ ordenes }) => (
   <Document width={500} height={700} wrap>
     {ordenes.map((orden, index) => {
       const impuestoMarca = orden.automovil.model.brand.impuestoMarca;
+      
       const serviciosDetallados = orden.servicios.map((servicio) => {
         const precioConImpuesto =
           servicio.precioUnitario * (1 + impuestoMarca / 100);

@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { buscarOrdenes, buscarOrdenesPorCliente } from "../api/Orden.Controller";
+import {
+  buscarOrdenes,
+  buscarOrdenesPorCliente,
+  editarOrdenDeTrabajo,
+} from "../api/Orden.Controller";
 
 const OrdenContext = createContext({
   orden: [],
@@ -15,6 +19,28 @@ const OrdenContext = createContext({
    * @returns {Promise<Orden[]>}
    */
   buscarOrdenesDeCliente: (idCliente) => {},
+
+  /**
+   * Confirma una orden de trabajo.
+   *
+   * @param {number} id Orden de trabajo a confirmar.
+   * @param {boolean} confirmada Estado de confirmación.
+   *
+   * @returns {Promise<Orden>}
+   */
+  confirmarOrden: (id, confirmada) => {},
+
+  /**
+   * Asigna un técnico a una orden existente.
+   *
+   * Para poder hacerlo, la orden no debe estar confirmada.
+   *
+   * @param {number} tecnico El tecnico a asignar.
+   * @param {number} orden La orden a la cual asignar el tecnico.
+   *
+   * @returns {Promise<Orden>}
+   */
+  asignarTecnico: (tecnico, orden) => {},
 });
 
 export function useOrdenContext() {
@@ -43,6 +69,38 @@ export function OrdenContextProvider({ children }) {
     }
   }
 
+  async function confirmarOrden(id, confirmada) {
+    try {
+      const orden = ordenes.find((orden) => orden.id === id);
+
+      if (!orden) return orden;
+
+      orden.confirmada = confirmada;
+
+      // Actualizar.
+      const editada = await editarOrdenDeTrabajo(id, { confirmada });
+
+      // Actualizar lista.
+      setOrdenes(ordenes.map((orden) => (orden.id === id ? editada : orden)));
+    } catch (e) {
+      console.error(`Fallo al confirmar orden ${id}: ${e}`);
+    }
+  }
+
+  async function asignarTecnico(tecnico, orden) {
+    try {
+      const editada = await editarOrdenDeTrabajo(orden, {
+        tecnico,
+      });
+
+      setOrdenes(ordenes.map((o) => (o.id === orden ? editada : o)));
+    } catch (e) {
+      console.error(
+        `Fallo al asignar tecnico ${tecnico} a orden ${orden}`
+      );
+    }
+  }
+
   useEffect(() => {
     buscarOrdenes()
       .then((ordenes) => setOrdenes(ordenes))
@@ -62,6 +120,8 @@ export function OrdenContextProvider({ children }) {
         removerOrdenes,
         agregarOrdenes,
         buscarOrdenesDeCliente,
+        confirmarOrden,
+        asignarTecnico,
       }}
     >
       {children}

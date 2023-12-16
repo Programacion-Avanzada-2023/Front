@@ -89,7 +89,7 @@ export async function editarOrdenDeTrabajo(id, detalles) {
       method: "PATCH",
       url: `${SpringBoot_Api}/ordenes/${id}`,
       data: {
-        detalles,
+        ...detalles,
       },
     });
 
