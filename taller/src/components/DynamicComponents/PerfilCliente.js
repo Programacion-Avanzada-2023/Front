@@ -6,6 +6,7 @@ import {
 import { ServicioContextProvider } from "../../context/ServicioContextProvider";
 import { PerfilClienteOrdenes } from "./PerfilClienteOrdenes";
 import { Button } from "react-bootstrap";
+import { TecnicoContextProvider } from "../../context/TecnicoContextProvider";
 
 export function PerfilCliente({ idCliente }) {
   const { buscarOrdenesDeCliente } = useOrdenContext();
@@ -54,7 +55,12 @@ export function PerfilCliente({ idCliente }) {
           <div className="w-full">
             <ServicioContextProvider>
               <OrdenContextProvider>
-                <PerfilClienteOrdenes ordenes={ordenesDeCliente} clienteId={idCliente} />
+                <TecnicoContextProvider>
+                  <PerfilClienteOrdenes
+                    ordenes={ordenesDeCliente}
+                    clienteId={idCliente}
+                  />
+                </TecnicoContextProvider>
               </OrdenContextProvider>
             </ServicioContextProvider>
           </div>

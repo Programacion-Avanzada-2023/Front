@@ -1,11 +1,14 @@
 import { useOrdenContext } from "../../context/OrdenContextProvider";
 import { useServicioContext } from "../../context/ServicioContextProvider";
+import { useTecnicoContext } from "../../context/TecnicoContextProvider";
 import OrdenTable from "../Tables/OrdenTable";
 
 export function PerfilClienteOrdenes({ ordenes, clienteId }) {
   const { servicios } = useServicioContext();
 
-  const { setOrdenes, removerOrdenes } = useOrdenContext();
+  const { setOrdenes, removerOrdenes, asignarTecnico } = useOrdenContext();
+
+  const { tecnicos } = useTecnicoContext();
 
   // Filtrar ordenes por el cliente.
   const ordenesDeCliente = ordenes.filter(
@@ -22,6 +25,8 @@ export function PerfilClienteOrdenes({ ordenes, clienteId }) {
         servicios={servicios}
         setOrdenes={setOrdenes}
         removerOrdenes={removerOrdenes}
+        tecnicos={tecnicos}
+        asignarTecnico={asignarTecnico}
       />
     </div>
   );
