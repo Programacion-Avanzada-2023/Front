@@ -43,6 +43,9 @@ export function NavBar() {
                 <NavDropdown.Item as={Link} to="/servicios">
                   Servicios
                 </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/reservas">
+                  Reservas
+                </NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>

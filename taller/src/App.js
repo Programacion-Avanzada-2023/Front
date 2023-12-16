@@ -16,6 +16,8 @@ import ModeloWrapper from "./components/Wrappers/ModeloWrapper";
 import AutomovilWrapper from "./components/Wrappers/AutomovilWrapper";
 import OrdenDeTrabajoWrapper from "./components/Wrappers/OrdenDeTrabajoWrapper";
 import { PerfilClienteWrapper } from "./components/Wrappers/Dynamic/PerfilClienteWrapper";
+import ReservaWrapper from "./components/Wrappers/ReservaWrapper";
+
 
 function App() {
   return (
@@ -33,6 +35,7 @@ function App() {
             <Route path="/clientes" element={<ClienteWrapper />} />
             <Route path="/ordenes" element={<OrdenDeTrabajoWrapper />} />
             <Route path="/servicios" element={<ServicioWrapper />} />
+            <Route path="/reservas" element={<ReservaWrapper/>}/>
             <Route path="/home" element={<Navigate to="/" />} />
 
             {/** Rutas Dinámicas */}
