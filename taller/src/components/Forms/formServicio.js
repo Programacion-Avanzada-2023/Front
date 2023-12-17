@@ -17,7 +17,7 @@ const formatOptionWithDescription = ({ value, label, description }) => (
 );
 
 export default function Servicio({ something }) {
-  const { servicios, setServicios, removerServicios, agregarServicio } =
+  const { servicios, setServicios, removerServicio, agregarServicio } =
     useServicioContext();
 
   const [name, setName] = useState("");
@@ -158,7 +158,7 @@ export default function Servicio({ something }) {
       <div className="w-[95%]">
         <ServicioTable
           servicios={servicios}
-          removerServicios={removerServicios}
+          removerServicio={removerServicio}
           setServicios={setServicios}
         />
       </div>

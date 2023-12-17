@@ -25,7 +25,7 @@ import {
  */
 export default function ServicioTable({
   servicios,
-  removerServicios,
+  removerServicio,
   setServicios,
 }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
@@ -39,7 +39,7 @@ export default function ServicioTable({
     await eliminarServicio(servicioSeleccionado?.id);
 
     // Eliminar la orden del contexto.
-    removerServicios(servicioSeleccionado?.id);
+    removerServicio(servicioSeleccionado?.id);
 
     // Esconder el modal.
     setShowDeleteModal(false);
