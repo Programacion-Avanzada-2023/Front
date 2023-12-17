@@ -532,7 +532,7 @@ export default function OrdenTable({
                       }}
                     >
                       <button
-                        className="p-1 bg-red-400 text-sm"
+                        className="p-1 bg-red-400 text-sm rounded-lg"
                         onClick={(e) => {
                           e.preventDefault();
                           // Establecer la orden seleccionada.
@@ -545,7 +545,7 @@ export default function OrdenTable({
                       </button>
                       <button
                         disabled={confirmada}
-                        className="p-1 bg-blue-400 disabled:bg-blue-800 text-sm"
+                        className="p-1 bg-blue-400 disabled:bg-blue-800 text-sm rounded-lg"
                         onClick={(e) => {
                           e.preventDefault();
                           // Establecer la orden seleccionada.
@@ -558,7 +558,7 @@ export default function OrdenTable({
                       </button>
                       <button
                         disabled={confirmada || tecnico === null}
-                        className="p-1 bg-green-400 text-sm disabled:bg-green-800"
+                        className="p-1 bg-green-400 text-sm disabled:bg-green-800 rounded-lg"
                         onClick={(e) => {
                           if (confirmada) return;
 
@@ -580,7 +580,7 @@ export default function OrdenTable({
                       >
                         {({ blob, url, loading, error }) => (
                           <button
-                            className="p-1 bg-green-500 text-sm text-black"
+                            className="p-1 bg-green-500 text-sm text-black rounded-lg"
                             disabled={loading}
                             onClick={(e) => {
                               if (loading) return; // Evitar múltiples clics mientras se genera el PDF

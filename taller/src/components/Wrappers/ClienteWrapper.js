@@ -1,11 +1,14 @@
 import FormCliente from "../Forms/FormCliente";
 import { ClienteContextProvider } from "../../context/ClienteContextProvider";
-import Cliente from "../Forms/Cliente";
+import { OrdenContextProvider } from '../../context/OrdenContextProvider';
 
 export default function ClienteWrapper() {
   return (
     <ClienteContextProvider>
-      <FormCliente />
+      <OrdenContextProvider>
+        <FormCliente />
+      </OrdenContextProvider>
+
       {/* <Cliente /> */}
     </ClienteContextProvider>
   );

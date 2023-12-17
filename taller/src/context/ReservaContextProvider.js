@@ -5,7 +5,7 @@ const ReservaContext = createContext({
   reservas: [],
   setReservas: () => {},
   removerReservas: (id) => {},
-  agregarReservas: (reservas) => {},
+  agregarReserva: (reservas) => {},
 });
 
 export function useReservaContext() {
@@ -20,7 +20,7 @@ export function ReservaContextProvider({ children }) {
     setReservas(reservas.filter((reserva) => reserva.id !== id));
   }
 
-  function agregarReservas(reserva) {
+  function agregarReserva(reserva) {
     setReservas([...reservas, reserva]);
   }
 
@@ -41,7 +41,7 @@ export function ReservaContextProvider({ children }) {
         reservas,
         setReservas,
         removerReservas,
-        agregarReservas,
+        agregarReserva,
       }}
     >
       {children}

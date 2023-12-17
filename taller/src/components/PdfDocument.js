@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     width: "25%",
     textAlign: "center",
     fontWeight: "bold",
+    fontSize: 14,
   },
   tableCell: {
     width: "25%",
@@ -83,10 +84,11 @@ const MyDocument = ({ ordenes }) => (
   <Document width={500} height={700} wrap>
     {ordenes.map((orden, index) => {
       const impuestoMarca = orden.automovil.model.brand.impuestoMarca;
-      
+
       const serviciosDetallados = orden.servicios.map((servicio) => {
         const precioConImpuesto =
-          servicio.precioUnitario * (1 + impuestoMarca / 100);
+          servicio.precioUnitario + impuestoMarca * servicio.precioUnitario;
+
         return {
           nombre: servicio.name,
           precioUnitario: servicio.precioUnitario,
@@ -110,7 +112,7 @@ const MyDocument = ({ ordenes }) => (
             <View style={styles.header}>
               {/* Texto e imagen */}
               <View style={styles.headerLeft}>
-                <Image src="/icono.ico" style={{ width: "100pt" }} />
+                <Image src="/icono.jpg" style={{ width: "64pt" }} />
                 <View style={styles.headerText}>
                   <Text style={styles.title}>Los Santos Customs</Text>
                   <Text style={styles.subtitle}>
@@ -129,6 +131,10 @@ const MyDocument = ({ ordenes }) => (
                   {orden.automovil.model.brand.name} -{" "}
                   {orden.automovil.licensePlate}
                 </Text>
+                <Text style={styles.headerText}>
+                  Técnico a Cargo: {orden.tecnico.person.name}{" "}
+                  {orden.tecnico.person.surName}
+                </Text>
               </View>
             </View>
 
@@ -138,7 +144,7 @@ const MyDocument = ({ ordenes }) => (
               <View style={styles.tableRow}>
                 <Text style={styles.tableHeader}>Servicio</Text>
                 <Text style={styles.tableHeader}>Precio Unitario</Text>
-                <Text style={styles.tableHeader}>Impuesto</Text>
+                <Text style={styles.tableHeader}>Impuesto p/ Marca</Text>
                 <Text style={styles.tableHeader}>Subtotal</Text>
               </View>
 
@@ -150,7 +156,7 @@ const MyDocument = ({ ordenes }) => (
                     AR$ {servicio.precioUnitario}
                   </Text>
                   <Text style={styles.tableCell}>
-                    {servicio.impuestoMarca}%
+                    {servicio.impuestoMarca * 100}%
                   </Text>
                   <Text style={styles.tableCell}>${servicio.subtotal}</Text>
                 </View>
@@ -178,6 +184,14 @@ const MyDocument = ({ ordenes }) => (
                 </Text>
                 <Text style={styles.tableCell}>{cliente.dni}</Text>
               </View>
+            </View>
+            <View>
+              <Text style={styles.title}>Detalles Adicionales</Text>
+              <Text style={styles.subtitle}>
+                {orden?.detalles?.length
+                  ? orden.detalles
+                  : "No presenta detalles adicionales."}
+              </Text>
             </View>
           </View>
         </Page>

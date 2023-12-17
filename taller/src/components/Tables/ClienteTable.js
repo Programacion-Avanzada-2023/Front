@@ -1,13 +1,13 @@
 import React, { useState, useRef } from "react";
 import { Form, Table, Button, Modal, Col } from "react-bootstrap";
-import { editarCliente, eliminarCliente } from "../api/Cliente.Controller";
+import { editarCliente, eliminarCliente } from "../../api/Cliente.Controller";
 
-export function TablaClientes({
+export function ClienteTable({
   removerCliente,
   clientesFiltrados,
-  filtro,
+  setFiltroNombre,
+  setFiltroFecha,
   handleFiltroChange,
-  filtrarClientes,
   setClientesFiltrados,
   setClientes,
 }) {
@@ -119,6 +119,12 @@ export function TablaClientes({
 
     return isValid;
   };
+
+  /** Referencia a campo de filtro de nombre. */
+  const filtroNombreRef = useRef();
+
+  /** Referencia a campo de filtro de fecha. */
+  const filtroFechaRef = useRef();
 
   return (
     <div>
@@ -254,14 +260,61 @@ export function TablaClientes({
         </Modal.Footer>
       </Modal>
 
-      <input
+      {/* <input
         type="text"
         placeholder="Filtrar por nombre"
         value={filtro}
         onChange={handleFiltroChange}
       />
 
-      <button onClick={filtrarClientes}>Filtrar</button>
+      <button onClick={filtrarClientes}>Filtrar</button> */}
+      <div className="my-4 mx-auto p-4 w-max bg-white rounded-xl flex flex-col gap-2">
+        <h2 className="text-xl font-semibold">Filtros</h2>
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-slate-800">Nombre de Cliente</span>
+            <input
+              type="text"
+              ref={filtroNombreRef}
+              className="rounded-md p-2 border-2"
+              onChange={(e) => {
+                setFiltroNombre(e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-slate-800">Fecha de Última Visita</span>
+            <input
+              type="date"
+              ref={filtroFechaRef}
+              className="rounded-md p-2 border-2"
+              onChange={(e) => {
+                setFiltroFecha(e.target.value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            className="w-full bg-blue-500 rounded-lg py-2 text-white"
+            onClick={handleFiltroChange}
+          >
+            Filtrar
+          </button>
+          <button
+            className="w-full bg-orange-500 rounded-lg py-2 text-white"
+            onClick={() => {
+              filtroFechaRef.current.value = "";
+              filtroNombreRef.current.value = "";
+
+              setFiltroNombre("");
+              setFiltroFecha("");
+            }}
+          >
+            Limpiar
+          </button>
+        </div>
+      </div>
 
       <Table responsive>
         <thead>
@@ -276,59 +329,116 @@ export function TablaClientes({
           </tr>
         </thead>
         <tbody>
-          {clientesFiltrados.map(({ person: cliente, id }) => {
-            // Calcular campos para unisión.
-            const fullName = `${cliente.surName}, ${cliente.name}`,
-              fullAddress =
-                cliente?.street && cliente?.streetNumber
-                  ? `${cliente?.street} ${cliente?.streetNumber}`
-                  : null;
+          {clientesFiltrados?.length ? (
+            clientesFiltrados.map(({ person: cliente, id }) => {
+              // Calcular campos para unisión.
+              const fullName = `${cliente.surName}, ${cliente.name}`,
+                fullAddress =
+                  cliente?.street && cliente?.streetNumber
+                    ? `${cliente?.street} ${cliente?.streetNumber}`
+                    : null;
 
-            return (
-              <tr key={cliente.dni}>
-                <td>{id}</td>
-                <td>{fullName}</td>
-                <td>{cliente.dni}</td>
-                <td>{cliente?.phoneNumber ?? "No posee"}</td>
-                <td>{fullAddress ?? "No posee"}</td>
-                <td>{cliente?.email ?? "No posee"}</td>
-                <td>
-                  {/*Boton de Eliminar Marca*/}
-                  <Col className="custom-col">
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      onClick={() => {
-                        setCliente({ ...cliente, id, idPersona: cliente?.id });
-                        handleShowDeleteModal();
-                      }}
-                    >
-                      Eliminar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => (window.location.href = `/clientes/${id}`)}
-                    >
-                      Ver Ordenes
-                    </Button>
-                  </Col>
-                  <Col className="custom-col">
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      onClick={() => {
-                        setCliente({ ...cliente, id, idPersona: cliente?.id });
-                        handleShowEditModal();
-                      }}
-                    >
-                      Editar
-                    </Button>
-                  </Col>
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={cliente.dni}>
+                  <td>{id}</td>
+                  <td>{fullName}</td>
+                  <td>{cliente.dni}</td>
+                  <td>{cliente?.phoneNumber ?? "No posee"}</td>
+                  <td>{fullAddress ?? "No posee"}</td>
+                  <td>{cliente?.email ?? "No posee"}</td>
+                  <td>
+                    <div className="w-full grid grid-cols-2 gap-2">
+                      <Button
+                        type="submit"
+                        variant="danger"
+                        onClick={() => {
+                          setCliente({
+                            ...cliente,
+                            id,
+                            idPersona: cliente?.id,
+                          });
+                          handleShowDeleteModal();
+                        }}
+                      >
+                        Eliminar
+                      </Button>
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        onClick={() => {
+                          setCliente({
+                            ...cliente,
+                            id,
+                            idPersona: cliente?.id,
+                          });
+                          handleShowEditModal();
+                        }}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="col-span-2"
+                        onClick={() =>
+                          (window.location.href = `/clientes/${id}`)
+                        }
+                      >
+                        Ver Ordenes
+                      </Button>
+                    </div>
+                    {/* <Col className="custom-col">
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        onClick={() => {
+                          setCliente({
+                            ...cliente,
+                            id,
+                            idPersona: cliente?.id,
+                          });
+                          handleShowDeleteModal();
+                        }}
+                      >
+                        Eliminar
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() =>
+                          (window.location.href = `/clientes/${id}`)
+                        }
+                      >
+                        Ver Ordenes
+                      </Button>
+                    </Col>
+                    <Col className="custom-col">
+                      <Button
+                        type="submit"
+                        variant="primary"
+                        onClick={() => {
+                          setCliente({
+                            ...cliente,
+                            id,
+                            idPersona: cliente?.id,
+                          });
+                          handleShowEditModal();
+                        }}
+                      >
+                        Editar
+                      </Button>
+                    </Col> */}
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="7" className="text-center">
+                No hay clientes para mostrar.
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
 
@@ -352,4 +462,4 @@ export function TablaClientes({
   );
 }
 
-export default TablaClientes;
+export default ClienteTable;

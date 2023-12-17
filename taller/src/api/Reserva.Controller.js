@@ -29,17 +29,17 @@ export async function buscarReservas() {
 /**
  * Inserta una nueva reserva en el sistema.
  *
- * @param {Reserva} reservas La reserva a insertar.
+ * @param {Reserva} reservaDto La reserva a insertar.
  *
  * @returns {Promise<Reserva>} La reserva insertada.
  */
-export async function crearReserva(reservas) {
+export async function crearReserva(reservaDto) {
   try {
     // Crear primero la marca.
     const { data: reserva } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/reservas`,
-      data: reserva,
+      data: reservaDto,
     });
 
     return reserva;

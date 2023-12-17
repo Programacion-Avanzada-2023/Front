@@ -229,7 +229,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                   <td>{id}</td>
                   <td>{name}</td>
                   <td>{origen?.length ? origen : "No Especifica"}</td>
-                  <td>{impuestoMarca ? `${impuestoMarca}%` : "N/A"}</td>
+                  <td>{impuestoMarca ? `${impuestoMarca * 100}%` : "N/A"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
