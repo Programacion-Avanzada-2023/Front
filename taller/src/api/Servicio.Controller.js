@@ -82,7 +82,7 @@ export async function eliminarServicio(id) {
 export async function editarServicio(servicio) {
   try {
     // Editar primero la persona.
-    const { data: service} = await axios({
+    const { data: service } = await axios({
       method: "PATCH",
       url: `${SpringBoot_Api}/servicios/${servicio.id}`,
       data: servicio,
@@ -92,5 +92,34 @@ export async function editarServicio(servicio) {
   } catch (e) {
     console.error(e);
     return null;
+  }
+}
+
+/**
+ * @typedef {Object} EstadisticaServicio
+ * @property {number} idServicio
+ * @property {string} nombreServicio
+ * @property {number} cantidadTecnicos
+ * @property {number} cantidadSolicitudes
+ * @property {number} fechaUltimaSolicitud
+ * @property {number} fechaPrimeraSolicitud
+ */
+
+/**
+ * Obtiene un listado de estadísticas de los servicios del dominio.
+ *
+ * @returns {Promise<Array<EstadisticaServicio>>} El listado de estadísticas.
+ */
+export async function obtenerEstadisticasServicios() {
+  try {
+    const { data } = await axios({
+      method: "GET",
+      url: `${SpringBoot_Api}/servicios/estadisticas`,
+    });
+
+    return data;
+  } catch (e) {
+    console.error(`Fallo al buscar las estadísticas: ${e}`);
+    throw e;
   }
 }
