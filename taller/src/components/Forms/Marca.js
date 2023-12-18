@@ -33,7 +33,7 @@ export default function Marca({ something }) {
   const validateInputFields = (name, origen, impuestoMarca) => {
     if (!name?.length) return false;
     if (!origen?.length || origen?.length < 4) return false;
-    if (!impuestoMarca || impuestoMarca <= 0) {
+    if (!impuestoMarca || impuestoMarca < 0) {
       return false; // Indicar que los campos no son válidos
     }
     const decimalRegex = /^\d+(\.\d{1,2})?$/;

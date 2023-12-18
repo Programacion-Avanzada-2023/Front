@@ -1,4 +1,4 @@
-import FormCliente from "../Forms/FormCliente";
+import FormCliente from "../Forms/formCliente";
 import { ClienteContextProvider } from "../../context/ClienteContextProvider";
 import { OrdenContextProvider } from '../../context/OrdenContextProvider';
 

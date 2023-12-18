@@ -101,21 +101,23 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
   const [canEditOrder, setCanEditOrder] = useState(false);
 
   const orderEditDetailsRef = useRef(null);
+  const orderEditDetailsRefName = useRef(null);
 
   const handleEditModal = async () => {
     // Esconder modal de edicion.
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    //const name = orderEditDetailsRef.current.value;
+    const name = orderEditDetailsRefName.current.value;
     const origen = orderEditDetailsRef.current.value;
-
+ 
     // Actualizar la orden en el contexto.
     setMarcas((prev) => {
       // Buscar la orden original.
       const marca = prev.find((m) => m.id === marcaSeleccionada?.id);
 
       // Actualizar la orden con el resultado de la peticion.
+      marca.name = name;
       marca.origen = origen;
 
       // Retornar el estado actualizado.
@@ -160,7 +162,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
               <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
-                ref={orderEditDetailsRef}
+                ref={orderEditDetailsRefName}
                 defaultValue={marcaSeleccionada?.name}
                 rows={5}
                 style={{
