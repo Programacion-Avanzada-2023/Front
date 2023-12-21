@@ -239,7 +239,7 @@ function Home() {
                       const id = e?.value ?? null;
 
                       setTecnico(parseInt(id));
-                      filtrar(fechaInicio, fechaFin, tecnico);
+                      filtrar(fechaInicio, fechaFin, parseInt(id));
                     }}
                   />
                 </div>
