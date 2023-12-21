@@ -1,14 +1,10 @@
 /**
- * @typedef Persona
+ * @typedef Modelo
  *
  * @property {number} id
  * @property {string} name
- * @property {string} surName
- * @property {number} dni
- * @property {string} [street]
- * @property {number} [streetNumber]
- * @property {string} [phoneNumber]
- * @property {string} [email]
+ * @property {Marca} brand
+ * @property {number} year
  */
 
 /**
@@ -19,77 +15,45 @@
  */
 
 /**
- * @typedef Marca
- *
- * @property {number} id
- * @property {string} name
- * @property {string} origen
- * @property {float} impuestoMarca
- */
-
-/**
- * @typedef Modelo
- *
- * @property {number} id
- * @property {string} name
- * @property {Marca} brand
- * @property {number} year
- */
-
-/**
  * @typedef Automovil
  *
  * @property {number} id
- * @property {Modelo} model
+ * @property {Modelo} modelo
  * @property {Cliente} client
  * @property {string} licensePlate
  */
-
-/**
- * @typedef Servicio
- *
- * @property {number} id
- * @property {string} name
- * @property {string} descripcion
- * @property {float} precioUnitario
- */
-
-/**
- * @typedef OrdenDeTrabajo
- *
- * @property {number} id
- * @property {Automovil} automovil
- * @property {string} [detalles]
- * @property {Array<Servicio>} servicios
- * @property {string} fechaCreacion
- * @property {string} fechaModificacion
- */
-
 import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
 import { useState, useRef } from "react";
-import { eliminarMarca } from "../../api/Marca.Controller";
+import {
+  editarAutomovil,
+  eliminarAutomovil,
+} from "../../api/Automovil.Controller";
 
 /**
  *
  * @param {{
- *  marcas: Array<Marca>
+ *  Automoviles: Array<Modelo>
  * }} props
  * @returns
  */
-export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
+export default function AutomovilTable({
+  automoviles,
+  removerAutomoviles,
+  setAutomoviles,
+}) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
-  const [marcaSeleccionada, setMarcaSeleccionada] = useState(null);
+  const [automovilSeleccionado, setautomovilSeleccionado] = useState(null);
 
   /** Estados y funciones helper para el modal de borrado. */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteModal = async () => {
     // Eliminar la orden.
-    await eliminarMarca(marcaSeleccionada?.id);
+    await eliminarAutomovil(automovilSeleccionado?.id);
 
     // Eliminar la orden del contexto.
-    removerMarca(marcaSeleccionada?.id);
+    removerAutomoviles(automovilSeleccionado?.id);
 
     // Esconder el modal.
     setShowDeleteModal(false);
@@ -100,42 +64,53 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [canEditOrder, setCanEditOrder] = useState(false);
 
+  const handleShowEditModal = () => setShowEditModal(true);
+
   const orderEditDetailsRef = useRef(null);
-  const orderEditDetailsRefName = useRef(null);
 
   const handleEditModal = async () => {
+    // Obtener el valor del textarea.
+    const licensePlate = orderEditDetailsRef.current.value;
+
+    if (
+      !/^([A-Za-z]{3}[0-9]{3}|[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}|[A-Za-z]{2}\\-[0-9]{4}|[A-Za-z][0-9]{3}[A-Za-z]{3}|[A-Za-z][0-9]{6})$/.test(
+        licensePlate
+      )
+    )
+      return;
+
     // Esconder modal de edicion.
     setShowEditModal(false);
 
-    // Obtener el valor del textarea.
-    const name = orderEditDetailsRefName.current.value;
-    const origen = orderEditDetailsRef.current.value;
- 
+    const automovil = await editarAutomovil(automovilSeleccionado?.id, {
+      licensePlate,
+    });
+
     // Actualizar la orden en el contexto.
-    setMarcas((prev) => {
+    setAutomoviles((prev) => {
       // Buscar la orden original.
-      const marca = prev.find((m) => m.id === marcaSeleccionada?.id);
+      const automoviles = prev.filter(
+        (a) => a?.id !== automovilSeleccionado?.id
+      );
 
       // Actualizar la orden con el resultado de la peticion.
-      marca.name = name;
-      marca.origen = origen;
+      /* modelo.name = name;
+      modelo.year = year; */
 
       // Retornar el estado actualizado.
-      return prev;
+      return [...automoviles, automovil];
     });
   };
-
-  const handleShowEditModal = () => setShowEditModal(true);
 
   return (
     <>
       {/** Modal de borrado */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Borrando {marcaSeleccionada?.id}</Modal.Title>
+          <Modal.Title>Borrando {automovilSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Esta por eliminar la marca <b>{marcaSeleccionada?.id}</b>. ¿Está
+          Esta por eliminar la modelo <b>{automovilSeleccionado?.id}</b>. ¿Está
           seguro?
         </Modal.Body>
         <Modal.Footer>
@@ -154,7 +129,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
       {/** Modal de edicion de orden */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editando {marcaSeleccionada?.id}</Modal.Title>
+          <Modal.Title>Editando {automovilSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="grid grid-cols-1 w-full gap-y-2 mx-2">
@@ -162,26 +137,8 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
               <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
-                ref={orderEditDetailsRefName}
-                defaultValue={marcaSeleccionada?.name}
-                rows={5}
-                style={{
-                  resize: "none",
-                }}
-                onChange={(e) => {
-                  const value = e.target?.value;
-
-                  // Actualizar el estado.
-                  setCanEditOrder(value?.length ? true : false);
-                }}
-              ></textarea>
-            </div>
-            <div>
-              <span className="text-sm text-slate-700">Origen</span>
-              <textarea
-                className="w-full p-2 border border-slate-200 rounded-md"
                 ref={orderEditDetailsRef}
-                defaultValue={marcaSeleccionada?.origen}
+                defaultValue={automovilSeleccionado?.licensePlate}
                 rows={5}
                 style={{
                   resize: "none",
@@ -189,8 +146,15 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                 onChange={(e) => {
                   const value = e.target?.value;
 
+                  const isValidLicensePlate =
+                    /^([A-Za-z]{3}[0-9]{3}|[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}|[A-Za-z]{2}\\-[0-9]{4}|[A-Za-z][0-9]{3}[A-Za-z]{3}|[A-Za-z][0-9]{6})$/.test(
+                      value
+                    );
+
                   // Actualizar el estado.
-                  setCanEditOrder(value?.length ? true : false);
+                  setCanEditOrder(
+                    value?.length && isValidLicensePlate ? true : false
+                  );
                 }}
               ></textarea>
             </div>
@@ -210,28 +174,33 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
         </Modal.Footer>
       </Modal>
 
+      {/** Modal de visualizacion de marcas */}
+
       <Table responsive>
         <thead>
           <tr className="text-center">
             <th>#</th>
-            <th>Nombre</th>
-            <th>Origen</th>
-            <th>Impuesto</th>
+            <th>Patente</th>
+            <th>Modelo</th>
+            <th>Cliente</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {marcas?.length ? (
-            marcas.map((marca, i) => {
+          {automoviles?.length ? (
+            automoviles.map((automovil, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, origen, impuestoMarca } = marca || {};
-              console.log(marca);
+              const { id, licensePlate, model, client } = automovil;
+
               return (
                 <tr key={i} className="text-center">
                   <td>{id}</td>
-                  <td>{name}</td>
-                  <td>{origen?.length ? origen : "No Especifica"}</td>
-                  <td>{impuestoMarca ? `${impuestoMarca * 100}%` : "N/A"}</td>
+                  <td>{licensePlate}</td>
+                  <td>{model?.name ?? "nombre no disponible"}</td>
+                  <td>
+                    {client?.person?.name} {client?.person?.surName}
+                  </td>
+
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -239,7 +208,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setMarcaSeleccionada(marca);
+                        setautomovilSeleccionado(automovil);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -253,7 +222,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setMarcaSeleccionada(marca);
+                        setautomovilSeleccionado(automovil);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();
@@ -267,7 +236,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={6}>No hay marcas registradas.</td>
+              <td colSpan={6}>No hay modelos registradas.</td>
             </tr>
           )}
         </tbody>

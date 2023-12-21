@@ -1,6 +1,7 @@
 import { useAutomovilContext } from "../../context/AutomovilContextProvider";
 import { useServicioContext } from "../../context/ServicioContextProvider";
 import { useOrdenContext } from "../../context/OrdenContextProvider";
+import { useTecnicoContext } from "../../context/TecnicoContextProvider";
 import OrdenTable from "../Tables/OrdenTable";
 import Select from "react-select";
 import { useState, useRef } from "react";
@@ -20,13 +21,26 @@ export default function OrdenDeTrabajo({ something }) {
   /** Accceder a los servicios existentes del dominio. */
   const { servicios } = useServicioContext();
 
+  /** Acceder a los tecnicos del dominio. */
+  const { tecnicos } = useTecnicoContext();
+
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
-  const { ordenes, setOrdenes, removerOrdenes, agregarOrdenes } =
-    useOrdenContext();
+  const {
+    ordenes,
+    setOrdenes,
+    removerOrdenes,
+    agregarOrdenes,
+    confirmarOrden,
+    asignarTecnico,
+  } = useOrdenContext();
 
   /** Estado que persiste la seleccion de un automovil. */
   const [automovil, setAutomovil] = useState(null);
   const automovilRef = useRef(automovil);
+
+  /** Estado que persiste la selección de un técnico. */
+  const [tecnico, setTecnico] = useState(null);
+  const tecnicoRef = useRef(tecnico);
 
   /** Estado que persiste la seleccion de servicios. */
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
@@ -58,6 +72,7 @@ export default function OrdenDeTrabajo({ something }) {
       automovil,
       servicios: serviciosSeleccionados,
       detalles: detalles ?? null,
+      tecnico,
     };
 
     setIsLoading(true);
@@ -85,19 +100,21 @@ export default function OrdenDeTrabajo({ something }) {
   const clearFormFields = () => {
     // Limpiar campos usando las referencias al DOM.
     automovilRef.current.clearValue();
+    tecnicoRef.current.clearValue();
     serviciosSeleccionadosRef.current.clearValue();
     detallesRef.current.value = "";
 
     // Limpiar estados.
     setAutomovil(null);
+    setTecnico(null);
     setServiciosSeleccionados([]);
     setDetalles("");
     setCanCreate(false);
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-full mx-4">
-      <div className="w-full p-4 bg-slate-200 rounded-xl flex flex-col gap-y-2">
+    <div className="flex gap-4 w-[98%] mx-4">
+      <div className="w-[50%] p-4 bg-slate-200 rounded-xl flex flex-col gap-y-2">
         <h1 className="text-xl">Ordenes de Trabajo</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
@@ -138,6 +155,24 @@ export default function OrdenDeTrabajo({ something }) {
             ></Select>
           </div>
           <div className="w-full py-1">
+            <span className="text-sm text-slate-600 p-0">Tecnico</span>
+            <Select
+              isClearable
+              isSearchable
+              placeholder="Seleccione un tecnico"
+              ref={tecnicoRef}
+              options={tecnicos.map((tecnico) => ({
+                value: tecnico.id,
+                label: `${tecnico.person.name} ${tecnico.person.surName}`,
+              }))}
+              onChange={(value) => {
+                const id = value?.value ?? null;
+
+                setTecnico(id);
+              }}
+            ></Select>
+          </div>
+          <div className="w-full py-1 col-span-2">
             <span className="text-sm text-slate-600 p-0">
               Servicios <span className="text-red-400">*</span>
             </span>
@@ -199,12 +234,15 @@ export default function OrdenDeTrabajo({ something }) {
           </button>
         </div>
       </div>
-      <div className="w-[95%]">
+      <div className="w-full">
         <OrdenTable
           ordenes={ordenes}
           servicios={servicios}
           removerOrdenes={removerOrdenes}
           setOrdenes={setOrdenes}
+          confirmarOrden={confirmarOrden}
+          tecnicos={tecnicos}
+          asignarTecnico={asignarTecnico}
         />
       </div>
     </div>

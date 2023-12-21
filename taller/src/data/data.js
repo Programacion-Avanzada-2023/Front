@@ -6,7 +6,7 @@ export const clientes = [
         dni: '4298227',
         street: 'Marcos Juarez',
         streetNumber: '1055',
-        phone:'3534799303',
+        phoneNumber:'3534799303',
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ export const clientes = [
         dni: '12345678',
         street: 'A la vuelta del nacho',
         streetNumber: '100',
-        phone:'154235697',
+        phoneNumber:'154235697',
     },
     {
         id: 3,
@@ -24,7 +24,7 @@ export const clientes = [
         dni: '12346598',
         street: 'Bv. Sarmiento',
         streetNumber: '1230',
-        phone:'154346935',
+        phoneNumber:'154346935',
     },
     {
         id: 4,
@@ -33,7 +33,7 @@ export const clientes = [
         dni: '23659483',
         street: 'Martinez Mendoza, algo asi',
         streetNumber: '235',
-        phone:'154632659',
+        phoneNumber:'154632659',
     },
 
 ]

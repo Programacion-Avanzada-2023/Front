@@ -4,16 +4,19 @@
  * @property {number} id
  * @property {string} name
  * @property {string} descripcion
+ * @property {float} precioUnitario
  */
 
 import { Modal, Button, Table } from "react-bootstrap";
 import Select from "react-select";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   crearServicio,
   eliminarServicio,
   editarServicio,
 } from "../../api/Servicio.Controller";
+import axios from "axios";
+import { SpringBoot_Api } from "../../app.config";
 
 /**
  *
@@ -24,7 +27,7 @@ import {
  */
 export default function ServicioTable({
   servicios,
-  removerServicios,
+  removerServicio,
   setServicios,
 }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
@@ -34,11 +37,16 @@ export default function ServicioTable({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteModal = async () => {
-    // Eliminar la orden.
+    // Eliminar el servicio.
     await eliminarServicio(servicioSeleccionado?.id);
 
-    // Eliminar la orden del contexto.
-    removerServicios(servicioSeleccionado?.id);
+    // Eliminar al servicio.
+    removerServicio(servicioSeleccionado?.id);
+
+    // Agregar al servicio a la lista de eliminados.
+    setServiciosEliminados((prev) => {
+      return [...prev, servicioSeleccionado];
+    });
 
     // Esconder el modal.
     setShowDeleteModal(false);
@@ -58,20 +66,61 @@ export default function ServicioTable({
     // Obtener el valor del textarea.
     const descripcion = orderEditDetailsRef.current.value;
 
+    // Actualizar la orden en la base de datos.
+    await editarServicio(servicioSeleccionado?.id, {
+      descripcion,
+    });
+
     // Actualizar la orden en el contexto.
     setServicios((prev) => {
-      // Buscar la orden original.
-      const servicio = prev.find((s) => s.id === servicioSeleccionado?.id);
+      const servicios = prev.filter(
+        (serv) => serv.id !== servicioSeleccionado.id
+      );
 
-      // Actualizar la orden con el resultado de la peticion.
-      servicio.descripcion = descripcion;
-
-      // Retornar el estado actualizado.
-      return prev;
+      return [...servicios, { ...servicioSeleccionado, descripcion }];
     });
   };
 
   const handleShowEditModal = () => setShowEditModal(true);
+
+  const [mostrarEliminados, setMostrarEliminados] = useState(false);
+
+  const [serviciosEliminados, setServiciosEliminados] = useState([]);
+
+  async function recuperarServicio(id) {
+    const { data: servicioRecuperado } = await axios({
+      method: "PATCH",
+      url: `${SpringBoot_Api}/servicios/${id}/recuperar`,
+    });
+
+    setServicios((prev) => {
+      const servicios = prev.filter((serv) => serv.id !== id);
+
+      return [...servicios, servicioRecuperado];
+    });
+
+    setServiciosEliminados((prev) => {
+      const servicios = prev.filter((serv) => serv.id !== id);
+
+      return [...servicios];
+    });
+  }
+
+  useEffect(() => {
+    async function buscarEliminados() {
+      const { data } = await axios({
+        method: "GET",
+        url: `${SpringBoot_Api}/servicios`,
+        params: {
+          eliminado: true,
+        },
+      });
+
+      setServiciosEliminados(data);
+    }
+
+    buscarEliminados();
+  }, []);
 
   return (
     <>
@@ -138,68 +187,114 @@ export default function ServicioTable({
         </Modal.Footer>
       </Modal>
 
-      <Table responsive>
-        <thead>
-          <tr className="text-center">
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Descripcion</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {servicios?.length ? (
-            servicios.map((servicio, i) => {
-              // Declarar una mejor visualizacion.
-              const { id, name, descripcion } = servicio;
-
-              return (
-                <tr key={i} className="text-center">
-                  <td>{id ?? null}</td>
-                  <td>{name}</td>
-                  <td className="text-sm text-slate-400 text-justify">
-                    {descripcion ?? "N/A"}
-                  </td>
-                  <td className="grid grid-cols-2 w-full">
-                    <button
-                      className="p-1 bg-red-400 text-sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-
-                        // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
-
-                        // Mostrar modal de borrado.
-                        handleShowDeleteModal();
-                      }}
-                    >
-                      Borrar
-                    </button>
-                    <button
-                      className="p-1 bg-blue-400 text-sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-
-                        // Establecer la orden seleccionada.
-                        setServicioSeleccionado(servicio);
-
-                        // Mostrar modal de edicion.
-                        handleShowEditModal();
-                      }}
-                    >
-                      Editar
-                    </button>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
+      <div className="w-full">
+        <div className="p-4 bg-slate-50 m-auto flex gap-2">
+          <input
+            type="checkbox"
+            className="p-2 checked:bg-blue-500 bg-white"
+            onChange={(e) => {
+              setMostrarEliminados(e.target.checked);
+            }}
+          />
+          <span className="text-sm text-slate-700">Mostrar Eliminados</span>
+        </div>
+        <Table responsive>
+          <thead>
             <tr className="text-center">
-              <td colSpan={4}>No hay servicios registrados.</td>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Descripcion</th>
+              <th>Precio Unitario</th>
+              <th>Acciones</th>
             </tr>
-          )}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {servicios?.length ? (
+              servicios.map((servicio, i) => {
+                // Declarar una mejor visualizacion.
+                const { id, name, descripcion, precioUnitario } = servicio;
+
+                return (
+                  <tr key={i} className="text-center">
+                    <td>{id ?? null}</td>
+                    <td>{name}</td>
+                    <td className="text-sm text-slate-400 text-justify">
+                      {descripcion ?? "N/A"}
+                    </td>
+                    <td>{precioUnitario ? `AR$ ${precioUnitario}` : "N/A"}</td>
+                    <td className="grid grid-cols-2 w-full">
+                      <button
+                        className="p-1 bg-red-400 text-sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          // Establecer la orden seleccionada.
+                          setServicioSeleccionado(servicio);
+
+                          // Mostrar modal de borrado.
+                          handleShowDeleteModal();
+                        }}
+                      >
+                        Borrar
+                      </button>
+                      <button
+                        className="p-1 bg-blue-400 text-sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          // Establecer la orden seleccionada.
+                          setServicioSeleccionado(servicio);
+
+                          // Mostrar modal de edicion.
+                          handleShowEditModal();
+                        }}
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr className="text-center">
+                <td colSpan={5}>No hay servicios registrados.</td>
+              </tr>
+            )}
+            {mostrarEliminados && serviciosEliminados?.length
+              ? serviciosEliminados.map((servicio, i) => {
+                  // Declarar una mejor visualizacion.
+                  const { id, name, descripcion, precioUnitario } = servicio;
+
+                  return (
+                    <tr key={i} className="text-center text-red-500">
+                      <td>{id ?? null}</td>
+                      <td>{name}</td>
+                      <td className="text-sm text-slate-400 text-justify">
+                        {descripcion ?? "N/A"}
+                      </td>
+                      <td>
+                        {precioUnitario ? `AR$ ${precioUnitario}` : "N/A"}
+                      </td>
+                      <td className="flex gap-2 w-full">
+                        <button
+                          disabled={false}
+                          className="p-1 bg-green-400 text-sm w-full"
+                          onClick={(e) => {
+                            e.preventDefault();
+
+                            recuperarServicio(id);
+                          }}
+                        >
+                          Recuperar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              : null}
+          </tbody>
+        </Table>
+      </div>
     </>
   );
 }

@@ -1,30 +1,9 @@
 /**
- * @typedef Persona
+ * @typedef modelo
  *
  * @property {number} id
  * @property {string} name
- * @property {string} surName
- * @property {number} dni
- * @property {string} [street]
- * @property {number} [streetNumber]
- * @property {string} [phoneNumber]
- * @property {string} [email]
- */
-
-/**
- * @typedef Cliente
- *
- * @property {number} id
- * @property {Persona} person
- */
-
-/**
- * @typedef Marca
- *
- * @property {number} id
- * @property {string} name
- * @property {string} origen
- * @property {float} impuestoMarca
+ * @property {string} year
  */
 
 /**
@@ -32,64 +11,34 @@
  *
  * @property {number} id
  * @property {string} name
- * @property {Marca} brand
+ * @property {modelo} brand
  * @property {number} year
  */
 
-/**
- * @typedef Automovil
- *
- * @property {number} id
- * @property {Modelo} model
- * @property {Cliente} client
- * @property {string} licensePlate
- */
-
-/**
- * @typedef Servicio
- *
- * @property {number} id
- * @property {string} name
- * @property {string} descripcion
- * @property {float} precioUnitario
- */
-
-/**
- * @typedef OrdenDeTrabajo
- *
- * @property {number} id
- * @property {Automovil} automovil
- * @property {string} [detalles]
- * @property {Array<Servicio>} servicios
- * @property {string} fechaCreacion
- * @property {string} fechaModificacion
- */
-
 import { Modal, Button, Table } from "react-bootstrap";
-import Select from "react-select";
 import { useState, useRef } from "react";
-import { eliminarMarca } from "../../api/Marca.Controller";
+import { editarModelo, eliminarModelo } from "../../api/Modelo.Controller";
 
 /**
  *
  * @param {{
- *  marcas: Array<Marca>
+ *  Modelo: Array<Modelo>
  * }} props
  * @returns
  */
-export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
+export default function ModeloTable({ modelos, removerModelos, setModelos }) {
   /** Estado que controla que orden fue la que se clickeo (ya sea en edicion o borrado) */
-  const [marcaSeleccionada, setMarcaSeleccionada] = useState(null);
+  const [modeloSeleccionado, setModeloSeleccionado] = useState(null);
 
   /** Estados y funciones helper para el modal de borrado. */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDeleteModal = async () => {
     // Eliminar la orden.
-    await eliminarMarca(marcaSeleccionada?.id);
+    await eliminarModelo(modeloSeleccionado?.id);
 
     // Eliminar la orden del contexto.
-    removerMarca(marcaSeleccionada?.id);
+    removerModelos(modeloSeleccionado?.id);
 
     // Esconder el modal.
     setShowDeleteModal(false);
@@ -101,27 +50,28 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
   const [canEditOrder, setCanEditOrder] = useState(false);
 
   const orderEditDetailsRef = useRef(null);
-  const orderEditDetailsRefName = useRef(null);
 
   const handleEditModal = async () => {
     // Esconder modal de edicion.
     setShowEditModal(false);
 
     // Obtener el valor del textarea.
-    const name = orderEditDetailsRefName.current.value;
-    const origen = orderEditDetailsRef.current.value;
- 
+    const name = orderEditDetailsRef.current.value;
+
+    const modelo = await editarModelo({
+      ...modeloSeleccionado,
+      name,
+    });
+
     // Actualizar la orden en el contexto.
-    setMarcas((prev) => {
-      // Buscar la orden original.
-      const marca = prev.find((m) => m.id === marcaSeleccionada?.id);
+    setModelos((prev) => {
+      // Filtrar todos los modelos menos el editado.
+      const modelos = prev.filter(
+        (modelo) => modelo.id !== modeloSeleccionado?.id
+      );
 
-      // Actualizar la orden con el resultado de la peticion.
-      marca.name = name;
-      marca.origen = origen;
-
-      // Retornar el estado actualizado.
-      return prev;
+      // Establecer el estado con el nuevo modelo.
+      return [...modelos, modelo];
     });
   };
 
@@ -132,10 +82,10 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
       {/** Modal de borrado */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Borrando {marcaSeleccionada?.id}</Modal.Title>
+          <Modal.Title>Borrando {modeloSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Esta por eliminar la marca <b>{marcaSeleccionada?.id}</b>. ¿Está
+          Esta por eliminar la modelo <b>{modeloSeleccionado?.id}</b>. ¿Está
           seguro?
         </Modal.Body>
         <Modal.Footer>
@@ -154,7 +104,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
       {/** Modal de edicion de orden */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Editando {marcaSeleccionada?.id}</Modal.Title>
+          <Modal.Title>Editando {modeloSeleccionado?.id}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="grid grid-cols-1 w-full gap-y-2 mx-2">
@@ -162,26 +112,8 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
               <span className="text-sm text-slate-700">name</span>
               <textarea
                 className="w-full p-2 border border-slate-200 rounded-md"
-                ref={orderEditDetailsRefName}
-                defaultValue={marcaSeleccionada?.name}
-                rows={5}
-                style={{
-                  resize: "none",
-                }}
-                onChange={(e) => {
-                  const value = e.target?.value;
-
-                  // Actualizar el estado.
-                  setCanEditOrder(value?.length ? true : false);
-                }}
-              ></textarea>
-            </div>
-            <div>
-              <span className="text-sm text-slate-700">Origen</span>
-              <textarea
-                className="w-full p-2 border border-slate-200 rounded-md"
                 ref={orderEditDetailsRef}
-                defaultValue={marcaSeleccionada?.origen}
+                defaultValue={modeloSeleccionado?.name}
                 rows={5}
                 style={{
                   resize: "none",
@@ -215,23 +147,23 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
           <tr className="text-center">
             <th>#</th>
             <th>Nombre</th>
-            <th>Origen</th>
-            <th>Impuesto</th>
+            <th>Año</th>
+            <th>Marca</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {marcas?.length ? (
-            marcas.map((marca, i) => {
+          {modelos?.length ? (
+            modelos.map((modelo, i) => {
               // Declarar una mejor visualizacion.
-              const { id, name, origen, impuestoMarca } = marca || {};
-              console.log(marca);
+              const { id, name, year, brand } = modelo;
+
               return (
                 <tr key={i} className="text-center">
                   <td>{id}</td>
                   <td>{name}</td>
-                  <td>{origen?.length ? origen : "No Especifica"}</td>
-                  <td>{impuestoMarca ? `${impuestoMarca * 100}%` : "N/A"}</td>
+                  <td>{year}</td>
+                  <td>{brand?.name ?? "N/A"}</td>
                   <td className="grid grid-cols-2 w-full">
                     <button
                       className="p-1 bg-red-400 text-sm"
@@ -239,7 +171,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setMarcaSeleccionada(marca);
+                        setModeloSeleccionado(modelo);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -253,7 +185,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setMarcaSeleccionada(marca);
+                        setModeloSeleccionado(modelo);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();
@@ -267,7 +199,7 @@ export default function MarcaTable({ marcas, removerMarca, setMarcas }) {
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={6}>No hay marcas registradas.</td>
+              <td colSpan={6}>No hay modelos registradas.</td>
             </tr>
           )}
         </tbody>

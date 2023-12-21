@@ -3,7 +3,8 @@ import { SpringBoot_Api } from "../app.config";
 
 /**
  * @typedef {Object} Marca
- * @property {string} [nombre]
+ * @property {string} [name]
+ * @property {string} [origen]
  */
 
 /**
@@ -38,13 +39,13 @@ export async function buscarMarcas() {
 export async function crearMarca(marca) {
   try {
     // Crear primero la marca.
-    const { data: marc } = await axios({
+    const { data } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/marcas`,
       data: marca,
     });
 
-    return marc;
+    return data;
   } catch (e) {
     console.error(e);
     return null;

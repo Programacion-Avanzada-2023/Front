@@ -39,13 +39,13 @@ export async function buscarModelos() {
 export async function crearModelo(modelo) {
   try {
     // Crear primero el modelo.
-    const { nombre } = await axios({
+    const { data } = await axios({
       method: "POST",
       url: `${SpringBoot_Api}/modelos`,
       data: modelo,
     });
 
-    return nombre;
+    return data;
   } catch (e) {
     console.error(e);
     return null;
@@ -80,16 +80,16 @@ export async function eliminarModelo(id) {
  *
  * @returns {Promise<any>} El modelo editado.
  */
-export async function editarModelo(id) {
+export async function editarModelo(modelo) {
   try {
     // Editar primero el modelo.
-    const { data: modelo } = await axios({
+    const { data } = await axios({
       method: "PATCH",
-      url: `${SpringBoot_Api}/modelos/${id}`,
+      url: `${SpringBoot_Api}/modelos/${modelo.id}`,
       data: modelo,
     });
 
-    return modelo;
+    return data;
   } catch (e) {
     console.error(e);
     return null;

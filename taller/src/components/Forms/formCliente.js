@@ -4,9 +4,10 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
-import TablaClientes from "../TablaClientes";
+import ClienteTable from "../Tables/ClienteTable";
 import { crearCliente } from "../../api/Cliente.Controller";
 import { useClienteContext } from "../../context/ClienteContextProvider";
+import { useOrdenContext } from "../../context/OrdenContextProvider";
 
 // import clientes from "../../data/data";
 
@@ -85,6 +86,8 @@ function FormCliente() {
 
     // Insertar el cliente.
     crearCliente(cliente).then((cliente) => {
+      console.log(cliente);
+
       setShowInsertAlert(true);
 
       setClientes([...clientes, cliente]);
@@ -110,11 +113,6 @@ function FormCliente() {
     }, 1000);
   }; */
 
-  const handleFiltrarClick = () => {
-    // Filtrar clientes.
-    filtrarClientes();
-  };
-
   // Determinar si los botones que requieren estos datos se habilitan
   const isSubmitDisabled =
     !nameValidated ||
@@ -132,18 +130,69 @@ function FormCliente() {
     if (clientes?.length) setClientesFiltrados(clientes);
   }, [clientes]);
 
-  /** Estado que persiste el filtro seleccionado. */
-  const [filtro, setFiltro] = useState("");
+  const { ordenes } = useOrdenContext();
 
-  const handleFiltroChange = (event) => {
-    setFiltro(event.target.value);
+  /** Estado que persiste el filtro por nombre o apellido de cliente */
+  const [filtroNombre, setFiltroNombre] = useState("");
+
+  /** Estado que persiste la fecha de última visita. */
+  const [filtroFecha, setFiltroFecha] = useState("");
+
+  /**
+   * Filtra a los clientes por el nombre o apellido ingresado.
+   */
+  const filtrarPorNombre = (previo) => {
+    if (!filtroNombre) return previo ?? clientes;
+
+    console.log(clientes);
+
+    const filtrados = (previo ?? clientes).filter(
+      ({ person: cliente }) =>
+        cliente.name.toLowerCase().includes(filtroNombre.toLowerCase()) ||
+        cliente.surName.toLowerCase().includes(filtroNombre.toLowerCase())
+    );
+
+    return filtrados;
   };
 
-  const filtrarClientes = () => {
-    const clientesFiltrados = clientes.filter(({ person: cliente }) =>
-      cliente.name.toLowerCase().includes(filtro.toLowerCase())
-    );
-    setClientesFiltrados(clientesFiltrados);
+  /**
+   * Filtra a los clientes por la fecha de última visita ingresada.
+   */
+  const filtrarPorFecha = (previo) => {
+    if (!filtroFecha) return previo ?? clientesFiltrados;
+
+    const filtrados = (previo ?? clientes).filter((cliente) => {
+      // Buscar la última orden del cliente.
+      const ultimaOrden = ordenes
+        .filter((orden) => orden.automovil.client.id === cliente.id)
+        .sort(
+          (a, b) =>
+            new Date(b.fechaModificacion) - new Date(a.fechaModificacion)
+        )[0];
+
+      // Si no tiene ordenes, no filtrar.
+      if (!ultimaOrden) return true;
+
+      // Es igual a la fecha de última visita?
+      const fecha = new Date(ultimaOrden.fechaModificacion),
+        fechaDeFiltro = new Date(filtroFecha);
+
+      return (
+        fecha.getUTCFullYear() === fechaDeFiltro.getUTCFullYear() &&
+        fecha.getUTCMonth() === fechaDeFiltro.getUTCMonth() &&
+        fecha.getUTCDate() === fechaDeFiltro.getUTCDate()
+      );
+    });
+
+    return filtrados;
+  };
+
+  const handleFiltroChange = () => {
+    const filtroPorNombre = filtrarPorNombre();
+
+    const filtroFinal = filtrarPorFecha(filtroPorNombre);
+
+    setClientesFiltrados(filtroFinal);
   };
 
   return (
@@ -212,8 +261,13 @@ function FormCliente() {
               onChange={(e) => {
                 const inputValue = e.target.value;
                 setDniTouched(true);
-                // Solo deja ingresar desde 1886 a 2023
-                const isValid = /^\d{7,8}$/.test(inputValue);
+
+                const isValid =
+                  /^\d{7,8}$/.test(inputValue) &&
+                  !clientes
+                    .map((c) => c.person.dni)
+                    .includes(parseInt(inputValue));
+
                 setDniValidated(isValid);
 
                 setDni(inputValue);
@@ -222,7 +276,7 @@ function FormCliente() {
 
             {/*Feedback para cuando el año es invalido*/}
             <Form.Control.Feedback type="invalid">
-              Por favor, ingrese un DNI valido.
+              Por favor, ingrese un DNI valido o no repetido.
             </Form.Control.Feedback>
           </Form.Group>
         </Row>
@@ -332,7 +386,7 @@ function FormCliente() {
               onClick={handleInsertClick}
               disabled={isSubmitDisabled}
             >
-              Ingresar Cliente
+              Insertar Cliente
             </Button>
             <br></br>
             <br></br>
@@ -342,29 +396,14 @@ function FormCliente() {
               </Alert>
             )}
           </Col>
-
-          {/*Boton de Listar Marca*/}
-          <Col type="submit" className="custom-col">
-            <Button variant="primary">Listar Clientes</Button>
-          </Col>
-
-          <Col>
-            <Button
-              type="submit"
-              className="custom-col"
-              onClick={handleFiltrarClick}
-            >
-              Filtrar por nombre
-            </Button>
-          </Col>
         </Row>
       </Form>
-      <TablaClientes
+      <ClienteTable
         removerCliente={removerCliente}
         clientesFiltrados={clientesFiltrados}
-        filtro={filtro}
+        setFiltroNombre={setFiltroNombre}
+        setFiltroFecha={setFiltroFecha}
         handleFiltroChange={handleFiltroChange}
-        filtrarClientes={filtrarClientes}
         setClientesFiltrados={setClientesFiltrados}
         setClientes={setClientes}
       />

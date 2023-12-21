@@ -1,34 +1,57 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import NavBar from "./components/NavBar";
 import Home from "./components/home";
 import "bootstrap/dist/css/bootstrap.min.css";
-import MarcaWrapper from "./components/Wrappers/MarcaWrapper"
+import MarcaWrapper from "./components/Wrappers/MarcaWrapper";
 import ServicioWrapper from "./components/Wrappers/ServicioWrapper";
 import ClienteWrapper from "./components/Wrappers/ClienteWrapper";
 import ModeloWrapper from "./components/Wrappers/ModeloWrapper";
 import AutomovilWrapper from "./components/Wrappers/AutomovilWrapper";
 import OrdenDeTrabajoWrapper from "./components/Wrappers/OrdenDeTrabajoWrapper";
+import { PerfilClienteWrapper } from "./components/Wrappers/Dynamic/PerfilClienteWrapper";
+import ReservaWrapper from "./components/Wrappers/ReservaWrapper";
+import { TecnicoContextProvider } from "./context/TecnicoContextProvider";
 
 function App() {
   return (
     <Router>
-      <div>
+      <div className="w-full">
         <NavBar />
         <br />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/marca" element={<MarcaWrapper />} />
-          <Route path="/modelo" element={<ModeloWrapper />} />
-          <Route path="/automovil" element={<AutomovilWrapper />} />
-          <Route path="/cliente" element={<ClienteWrapper />} />
-          <Route path="/ordenTrabajo" element={<OrdenDeTrabajoWrapper />} />
-          <Route path="/servicio" element={<ServicioWrapper />} />
-          <Route path="/home" element={<Navigate to="/" />} />
-        </Routes>
+        <div className="w-full">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <TecnicoContextProvider>
+                  <Home />
+                </TecnicoContextProvider>
+              }
+            />
+            <Route path="/marcas" element={<MarcaWrapper />} />
+            <Route path="/modelos" element={<ModeloWrapper />} />
+            <Route path="/automoviles" element={<AutomovilWrapper />} />
+            <Route path="/clientes" element={<ClienteWrapper />} />
+            <Route path="/ordenes" element={<OrdenDeTrabajoWrapper />} />
+            <Route path="/servicios" element={<ServicioWrapper />} />
+            <Route path="/reservas" element={<ReservaWrapper />} />
+            <Route path="/home" element={<Navigate to="/" />} />
+
+            {/** Rutas Dinámicas */}
+            <Route
+              path="/clientes/:clienteId"
+              element={<PerfilClienteWrapper />}
+            />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
