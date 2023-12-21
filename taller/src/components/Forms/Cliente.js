@@ -1,6 +1,6 @@
 import { useClienteContext } from "../../context/ClienteContextProvider";
 import ClienteTable from "../Tables/ClienteTable";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { crearCliente } from "../../api/Cliente.Controller";
 import { useOrdenContext } from "../../context/OrdenContextProvider";
 
@@ -8,6 +8,11 @@ export default function Cliente({ something }) {
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
   const { clientes, setClientes, removerCliente, agregarCliente } =
     useClienteContext();
+
+  useEffect(() => {
+    setClientesFiltrados(clientes);
+    clearFormFields();
+  }, [clientes]);
 
   /** Estado que persiste la escritura de un detalle de la orden (opcional). */
   const [name, setName] = useState("");
@@ -194,188 +199,190 @@ export default function Cliente({ something }) {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-full mx-4">
-      <div className="w-full p-4 bg-slate-200 rounded-xl flex flex-col gap-y-2">
-        <h1 className="text-xl">Clientes</h1>
-        <div className="w-full grid grid-cols-3 gap-x-2">
-          <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">
-              Nombre <span className="text-red-400 text-sm">*</span>
-            </span>
-            <input
-              type="text"
-              className="w-full rounded-md p-2"
-              placeholder="Nombre"
-              ref={nameRef}
-              onChange={(e) => {
-                const value = e.target?.value;
-
-                setName(value);
-
-                setCanCreate(validateInputFields(name, value));
-              }}
-            />
-          </div>
-          <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">
-              Apellido <span className="text-red-400 text-sm">*</span>
-            </span>
-            <input
-              type="text"
-              className="w-full rounded-md p-2"
-              placeholder="Apellido"
-              ref={surnameRef}
-              onChange={(e) => {
-                const value = e.target?.value;
-
-                setSurName(value);
-
-                setCanCreate(validateInputFields(surName, value));
-              }}
-            />
-          </div>
-          <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">
-              D.N.I. <span className="text-red-400 text-sm">*</span>
-            </span>
-            <input
-              type="number"
-              className="w-full rounded-md p-2"
-              placeholder="D.N.I."
-              ref={dniRef}
-              onChange={(e) => {
-                const value = e.target?.value;
-
-                setDni(value);
-
-                setCanCreate(validateInputFields(dni, value));
-              }}
-            />
-          </div>
-          <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">
-              Telefono Celular <span className="text-red-400 text-sm">*</span>
-            </span>
-            <input
-              type="text"
-              className="w-full rounded-md p-2"
-              placeholder="+54 ..."
-              ref={phoneNumberRef}
-              onChange={(e) => {
-                const value = e.target?.value;
-
-                setPhoneNumber(value);
-
-                setCanCreate(validateInputFields(phoneNumber, value));
-              }}
-            />
-          </div>
-          <div className="col-span-2 flex gap-x-2">
+    <div className="w-[98%] flex flex-col gap-2">
+      <div className="gap-4 w-full mx-4">
+        <div className="w-full p-4 bg-slate-200 rounded-xl flex flex-col gap-y-2">
+          <h1 className="text-xl">Clientes</h1>
+          <div className="w-full grid grid-cols-3 gap-x-2">
             <div className="w-full py-1">
-              <span className="text-sm text-slate-600 p-0">Direccion</span>
+              <span className="text-sm text-slate-600 p-0">
+                Nombre <span className="text-red-400 text-sm">*</span>
+              </span>
               <input
                 type="text"
                 className="w-full rounded-md p-2"
-                placeholder="Nombre de Calle"
-                ref={streetRef}
+                placeholder="Nombre"
+                ref={nameRef}
                 onChange={(e) => {
                   const value = e.target?.value;
 
-                  setStreet(value);
+                  setName(value);
 
-                  setCanCreate(validateInputFields(street, value));
+                  setCanCreate(validateInputFields(name, value));
                 }}
               />
             </div>
             <div className="w-full py-1">
-              <span className="text-sm text-slate-600 p-0">Altura</span>
+              <span className="text-sm text-slate-600 p-0">
+                Apellido <span className="text-red-400 text-sm">*</span>
+              </span>
               <input
-                type="number"
+                type="text"
                 className="w-full rounded-md p-2"
-                placeholder="Altura de Calle"
-                ref={streetNumberRef}
+                placeholder="Apellido"
+                ref={surnameRef}
                 onChange={(e) => {
                   const value = e.target?.value;
 
-                  setStreetNumber(value);
+                  setSurName(value);
 
-                  setCanCreate(validateInputFields(streetNumber, value));
+                  setCanCreate(validateInputFields(surName, value));
                 }}
               />
             </div>
-          </div>
-          <div className="py-1 col-span-3 justify-self-center w-[50%]">
-            <span className="text-sm text-slate-600 p-0">E-Mail</span>
-            <input
-              type="text"
-              className="w-full rounded-md p-2"
-              placeholder="alguien@test.com"
-              ref={emailRef}
-              onChange={(e) => {
-                const value = e.target?.value;
+            <div className="w-full py-1">
+              <span className="text-sm text-slate-600 p-0">
+                D.N.I. <span className="text-red-400 text-sm">*</span>
+              </span>
+              <input
+                type="number"
+                className="w-full rounded-md p-2"
+                placeholder="D.N.I."
+                ref={dniRef}
+                onChange={(e) => {
+                  const value = e.target?.value;
 
-                setEmail(value);
+                  setDni(value);
 
-                setCanCreate(validateInputFields(email, value));
-              }}
-            />
-          </div>
-          <div className="w-full flex gap-2 col-span-3">
-            <button
-              className={`w-full p-2 ${
-                name &&
-                surName &&
-                dni &&
-                street &&
-                streetNumber &&
-                phoneNumber &&
-                email &&
-                validateInputFields(
-                  name,
-                  surName,
-                  dni,
-                  street,
-                  streetNumber,
-                  phoneNumber,
-                  email
-                )
-                  ? "bg-blue-500"
-                  : "bg-blue-300"
-              } rounded-xl text-white font-semibold col-span-2`}
-              disabled={
-                !name ||
-                !surName ||
-                !dni ||
-                !street ||
-                !streetNumber ||
-                !phoneNumber ||
-                !email ||
-                !validateInputFields(
-                  name,
-                  surName,
-                  dni,
-                  street,
-                  streetNumber,
-                  phoneNumber,
-                  email
-                )
-              }
-              onClick={handleOrderCreation}
-            >
-              Crear Nueva
-            </button>
-            <button
-              className="w-full p-2 bg-orange-500 rounded-xl text-white font-semibold"
-              onClick={clearFormFields}
-            >
-              Limpiar Todo
-            </button>
+                  setCanCreate(validateInputFields(dni, value));
+                }}
+              />
+            </div>
+            <div className="w-full py-1">
+              <span className="text-sm text-slate-600 p-0">
+                Telefono Celular <span className="text-red-400 text-sm">*</span>
+              </span>
+              <input
+                type="text"
+                className="w-full rounded-md p-2"
+                placeholder="+54 ..."
+                ref={phoneNumberRef}
+                onChange={(e) => {
+                  const value = e.target?.value;
+
+                  setPhoneNumber(value);
+
+                  setCanCreate(validateInputFields(phoneNumber, value));
+                }}
+              />
+            </div>
+            <div className="col-span-2 flex gap-x-2">
+              <div className="w-full py-1">
+                <span className="text-sm text-slate-600 p-0">Direccion</span>
+                <input
+                  type="text"
+                  className="w-full rounded-md p-2"
+                  placeholder="Nombre de Calle"
+                  ref={streetRef}
+                  onChange={(e) => {
+                    const value = e.target?.value;
+
+                    setStreet(value);
+
+                    setCanCreate(validateInputFields(street, value));
+                  }}
+                />
+              </div>
+              <div className="w-full py-1">
+                <span className="text-sm text-slate-600 p-0">Altura</span>
+                <input
+                  type="number"
+                  className="w-full rounded-md p-2"
+                  placeholder="Altura de Calle"
+                  ref={streetNumberRef}
+                  onChange={(e) => {
+                    const value = e.target?.value;
+
+                    setStreetNumber(value);
+
+                    setCanCreate(validateInputFields(streetNumber, value));
+                  }}
+                />
+              </div>
+            </div>
+            <div className="py-1 col-span-3 justify-self-center w-[50%]">
+              <span className="text-sm text-slate-600 p-0">E-Mail</span>
+              <input
+                type="text"
+                className="w-full rounded-md p-2"
+                placeholder="alguien@test.com"
+                ref={emailRef}
+                onChange={(e) => {
+                  const value = e.target?.value;
+
+                  setEmail(value);
+
+                  setCanCreate(validateInputFields(email, value));
+                }}
+              />
+            </div>
+            <div className="w-full flex gap-2 col-span-3">
+              <button
+                className={`w-full p-2 ${
+                  name &&
+                  surName &&
+                  dni &&
+                  street &&
+                  streetNumber &&
+                  phoneNumber &&
+                  email &&
+                  validateInputFields(
+                    name,
+                    surName,
+                    dni,
+                    street,
+                    streetNumber,
+                    phoneNumber,
+                    email
+                  )
+                    ? "bg-blue-500"
+                    : "bg-blue-300"
+                } rounded-xl text-white font-semibold col-span-2`}
+                disabled={
+                  !name ||
+                  !surName ||
+                  !dni ||
+                  !street ||
+                  !streetNumber ||
+                  !phoneNumber ||
+                  !email ||
+                  !validateInputFields(
+                    name,
+                    surName,
+                    dni,
+                    street,
+                    streetNumber,
+                    phoneNumber,
+                    email
+                  )
+                }
+                onClick={handleOrderCreation}
+              >
+                Crear Nueva
+              </button>
+              <button
+                className="w-full p-2 bg-orange-500 rounded-xl text-white font-semibold"
+                onClick={clearFormFields}
+              >
+                Limpiar Todo
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-[95%]">
+      <div className="w-full mx-4">
         <ClienteTable
-          clientes={clientes}
+          clientesFiltrados={clientesFiltrados}
           removerCliente={removerCliente}
           setClientes={setClientes}
           setFiltroNombre={setFiltroNombre}
