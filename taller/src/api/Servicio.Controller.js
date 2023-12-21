@@ -75,17 +75,17 @@ export async function eliminarServicio(id) {
 /**
  * Edita a un servicio del dominio.
  *
- * @param {Servicio} servicio El servicio a editar.
+ * @param {Servicio} data El servicio a editar.
  *
  * @returns {Promise<any>} El servicio editado.
  */
-export async function editarServicio(servicio) {
+export async function editarServicio(id, data) {
   try {
     // Editar primero la persona.
     const { data: service } = await axios({
       method: "PATCH",
-      url: `${SpringBoot_Api}/servicios/${servicio.id}`,
-      data: servicio,
+      url: `${SpringBoot_Api}/servicios/${id}`,
+      data,
     });
 
     return service;

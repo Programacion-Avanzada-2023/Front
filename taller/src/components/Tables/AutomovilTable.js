@@ -69,21 +69,28 @@ export default function AutomovilTable({
   const orderEditDetailsRef = useRef(null);
 
   const handleEditModal = async () => {
-    // Esconder modal de edicion.
-    setShowEditModal(false);
-
     // Obtener el valor del textarea.
     const licensePlate = orderEditDetailsRef.current.value;
 
-    const automovil = await editarAutomovil(
-      automovilSeleccionado?.id,
-      licensePlate
-    );
+    if (
+      !/^([A-Za-z]{3}[0-9]{3}|[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}|[A-Za-z]{2}\\-[0-9]{4}|[A-Za-z][0-9]{3}[A-Za-z]{3}|[A-Za-z][0-9]{6})$/.test(
+        licensePlate
+      )
+    )
+      return;
+
+    // Esconder modal de edicion.
+    setShowEditModal(false);
+
+    const automovil = await editarAutomovil(automovilSeleccionado?.id, {
+      licensePlate,
+    });
+
     // Actualizar la orden en el contexto.
     setAutomoviles((prev) => {
       // Buscar la orden original.
       const automoviles = prev.filter(
-        (a) => a.id === automovilSeleccionado?.id
+        (a) => a?.id !== automovilSeleccionado?.id
       );
 
       // Actualizar la orden con el resultado de la peticion.
@@ -139,8 +146,15 @@ export default function AutomovilTable({
                 onChange={(e) => {
                   const value = e.target?.value;
 
+                  const isValidLicensePlate =
+                    /^([A-Za-z]{3}[0-9]{3}|[A-Za-z]{2}[0-9]{3}[A-Za-z]{2}|[A-Za-z]{2}\\-[0-9]{4}|[A-Za-z][0-9]{3}[A-Za-z]{3}|[A-Za-z][0-9]{6})$/.test(
+                      value
+                    );
+
                   // Actualizar el estado.
-                  setCanEditOrder(value?.length ? true : false);
+                  setCanEditOrder(
+                    value?.length && isValidLicensePlate ? true : false
+                  );
                 }}
               ></textarea>
             </div>
@@ -183,7 +197,9 @@ export default function AutomovilTable({
                   <td>{id}</td>
                   <td>{licensePlate}</td>
                   <td>{model?.name ?? "nombre no disponible"}</td>
-                  <td>{client?.person?.name} {client?.person?.surName}</td>
+                  <td>
+                    {client?.person?.name} {client?.person?.surName}
+                  </td>
 
                   <td className="grid grid-cols-2 w-full">
                     <button
@@ -192,7 +208,7 @@ export default function AutomovilTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setautomovilSeleccionado(model);
+                        setautomovilSeleccionado(automovil);
 
                         // Mostrar modal de borrado.
                         handleShowDeleteModal();
@@ -206,7 +222,7 @@ export default function AutomovilTable({
                         e.preventDefault();
 
                         // Establecer la orden seleccionada.
-                        setautomovilSeleccionado(model);
+                        setautomovilSeleccionado(automovil);
 
                         // Mostrar modal de edicion.
                         handleShowEditModal();

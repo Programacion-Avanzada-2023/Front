@@ -19,12 +19,8 @@ export default function Automovil({ something }) {
   const { clientes } = useClienteContext();
 
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
-  const {
-    automoviles,
-    setAutomoviles,
-    removerAutomovil,
-    agregarAutomovil,
-  } = useAutomovilContext();
+  const { automoviles, setAutomoviles, removerAutomovil, agregarAutomovil } =
+    useAutomovilContext();
 
   const [modelo, setModelo] = useState();
   const modeloRef = useRef(modelo);
@@ -43,11 +39,8 @@ export default function Automovil({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = () => {
-    const licensePlate = licensePlateRef.current.value;
-    const modelo = modeloRef.current.getValue();
-    const cliente = clienteRef.current.getValue();
-    const kilometraje = kilometrajeRef.current.value;
+  const validateInputFields = (licensePlate, modelo, cliente, kilometraje) => {
+    console.log(licensePlate, modelo, cliente, kilometraje);
 
     if (!licensePlate?.length) return false;
     if (
@@ -56,8 +49,8 @@ export default function Automovil({ something }) {
       )
     )
       return false;
-    if (!modelo?.length) return false;
-    if (!cliente?.length) return false;
+    if (typeof modelo === "undefined") return false;
+    if (typeof cliente === "undefined") return false;
     if (kilometraje < 0) return false;
 
     return true;
@@ -80,15 +73,12 @@ export default function Automovil({ something }) {
 
     try {
       // Crear la nueva orden.
-      console.log(body);
       const automovil = await crearAutomovil(
         body
       ); /* .then(() => {agregarModelos(modelo)
         console.log(name, year, marca);
         console.log(modelo);
       }) */
-      console.log(licensePlate, modelo, cliente);
-      console.log(automovil);
 
       // Agregar la nueva orden a la lista de ordenes.
       agregarAutomovil(automovil);
@@ -145,7 +135,9 @@ export default function Automovil({ something }) {
 
                 setLicensePlate(value);
 
-                setCanCreate(validateInputFields());
+                setCanCreate(
+                  validateInputFields(value, modelo, cliente, kilometraje)
+                );
               }}
             ></textarea>
           </div>
@@ -159,11 +151,13 @@ export default function Automovil({ something }) {
               ref={kilometrajeRef}
               defaultValue={0}
               onChange={(e) => {
-                const value = e.target?.value;
+                const value = parseInt(e.target?.value);
 
-                setKilometraje(+value);
+                setKilometraje(value);
 
-                setCanCreate(validateInputFields());
+                setCanCreate(
+                  validateInputFields(licensePlate, modelo, cliente, value)
+                );
               }}
               className="p-1 rounded-md"
             />
@@ -191,7 +185,9 @@ export default function Automovil({ something }) {
                   const id = value?.value ?? null;
 
                   setModelo(id);
-                  setCanCreate(validateInputFields());
+                  setCanCreate(
+                    validateInputFields(licensePlate, id, cliente, kilometraje)
+                  );
                 }
 
                 // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
@@ -221,12 +217,12 @@ export default function Automovil({ something }) {
                 };
               })}
               onChange={(value) => {
-                if (value) {
-                  const id = value?.value ?? null;
+                const id = value?.value ?? null;
 
-                  setCliente(id);
-                  setCanCreate(validateInputFields());
-                }
+                setCliente(id);
+                setCanCreate(
+                  validateInputFields(licensePlate, modelo, id, kilometraje)
+                );
 
                 // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
               }}

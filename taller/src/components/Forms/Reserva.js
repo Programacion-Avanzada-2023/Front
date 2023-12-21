@@ -29,7 +29,7 @@ function EveryThreeDays({
   return (
     <TimeGrid
       date={date}
-      eventOffset={15}
+      eventOffset={20}
       localizer={localizer}
       max={max}
       min={min}
@@ -101,15 +101,10 @@ export default function Reserva({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = () => {
-    const fechaInicio = fechaInicioRef.current.value;
-    const fechaFin = fechaFinRef.current.value;
-    const cliente = clienteRef.current.getValue();
-    const tecnico = tecnicoRef.current.getValue();
-
+  const validateInputFields = (fechaInicio, fechaFin, cliente, tecnico) => {
     // Validar que tengan contenido las fechas.
-    if (!fechaInicio || !fechaInicio.length) return false;
-    if (!fechaFin || !fechaFin.length) return false;
+    if (!fechaInicio?.length) return false;
+    if (!fechaFin?.length) return false;
 
     const inicio = new Date(fechaInicio),
       fin = new Date(fechaFin);
@@ -117,6 +112,9 @@ export default function Reserva({ something }) {
     // Validar que esten en un rango válido y no sean en el pasado.
     if (inicio > fin) return false;
     if (inicio < new Date() || fin < new Date()) return false;
+
+    if (typeof tecnico === "undefined") return false;
+    if (typeof cliente === "undefined") return false;
 
     // Validar que no se superpongan con otras reservas.
     const mappeo = reservas.map((reserva) => {
@@ -139,19 +137,15 @@ export default function Reserva({ something }) {
     const overlaps = mappeo.some((reserva) => {
       const { start, end } = reserva;
 
-      const hasOverlap = (inicio >= start && inicio <= end) || (fin >= start && fin <= end);
+      const hasOverlap =
+        (inicio >= start && inicio <= end) || (fin >= start && fin <= end);
 
       if (hasOverlap) {
-        if (reserva?.tecnico?.id === tecnico[0]?.value) return true;
+        if (reserva?.tecnico?.id === tecnico) return true;
       }
     });
 
-    console.log(overlaps);
-
     if (overlaps) return false;
-
-    if (!tecnico?.length) return false;
-    if (!cliente?.length) return false;
 
     return true;
   };
@@ -207,7 +201,8 @@ export default function Reserva({ something }) {
 
   /** Construir eventos de calendario en base a las reservas. */
   const eventosCalendario = reservas.map((reserva, i) => {
-    const rawStart = new Date(reserva.fechaInicio), rawEnd = new Date(reserva.fechaFin);
+    const rawStart = new Date(reserva.fechaInicio),
+      rawEnd = new Date(reserva.fechaFin);
 
     rawStart.setHours(rawStart.getHours() - 3);
     rawEnd.setHours(rawEnd.getHours() - 3);
@@ -220,11 +215,11 @@ export default function Reserva({ something }) {
     };
   });
 
-  const { views } = useMemo(
+  const { defaultDate, views } = useMemo(
     () => ({
-      defaultDate: new Date(2015, 3, 1),
+      defaultDate: new Date(),
       views: {
-        month: true,
+        month: false,
         week: EveryThreeDays,
       },
     }),
@@ -248,7 +243,9 @@ export default function Reserva({ something }) {
 
                 setFechaInicio(value);
 
-                setCanCreate(validateInputFields());
+                setCanCreate(
+                  validateInputFields(value, fechaFin, cliente, tecnico)
+                );
               }}
               className="p-1 rounded-md"
             />
@@ -267,7 +264,9 @@ export default function Reserva({ something }) {
 
                 console.log(value);
 
-                setCanCreate(validateInputFields());
+                setCanCreate(
+                  validateInputFields(fechaInicio, fechaFin, cliente, tecnico)
+                );
               }}
               className="p-1 rounded-md"
             />
@@ -290,7 +289,9 @@ export default function Reserva({ something }) {
                   const id = value?.value ?? null;
 
                   setTecnico(id);
-                  setCanCreate(validateInputFields());
+                  setCanCreate(
+                    validateInputFields(fechaInicio, fechaFin, cliente, id)
+                  );
                 }
 
                 // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
@@ -324,7 +325,9 @@ export default function Reserva({ something }) {
                   const id = value?.value ?? null;
 
                   setCliente(id);
-                  setCanCreate(validateInputFields());
+                  setCanCreate(
+                    validateInputFields(fechaInicio, fechaFin, id, tecnico)
+                  );
                 }
 
                 // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.
@@ -353,10 +356,12 @@ export default function Reserva({ something }) {
       </div>
       <div className="w-full bg-white p-4">
         <Calendar
-          defaultDate={new Date()}
-          defaultView={Views.WEEK}
+          defaultDate={defaultDate}
+          defaultView={"week"}
           localizer={localizer}
-          views={views}
+          views={{
+            week: true,
+          }}
           events={eventosCalendario}
         />
       </div>
