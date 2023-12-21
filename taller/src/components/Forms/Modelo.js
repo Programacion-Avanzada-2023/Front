@@ -27,9 +27,9 @@ export default function Modelo({ something }) {
   const marcaRef = useRef(marca);
 
   /** Estado que persiste la escritura de un detalle de la orden (opcional). */
-  const [name, setname] = useState("");
+  const [name, setName] = useState("");
   const nameRef = useRef(name);
-  const [year, setYear] = useState("");
+  const [year, setYear] = useState(0);
   const yearRef = useRef(year);
 
   /** Estado que determina si algo esta cargando. */
@@ -38,8 +38,12 @@ export default function Modelo({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (name) => {
+  const validateInputFields = (name, year, brand) => {
+    console.log(name, year, brand);
+
     if (!name?.length) return false;
+    if (year < 1800 || year > 9999) return false;
+    if (typeof brand === "undefined") return false;
 
     return true;
   };
@@ -84,11 +88,11 @@ export default function Modelo({ something }) {
 
     marcaRef.current.clearValue();
     nameRef.current.value = "";
-    yearRef.current.value = "";
+    yearRef.current.value = 0;
 
     // Limpiar estados.
     setMarca(null);
-    setname("");
+    setName("");
     setYear("");
     setCanCreate(false);
   };
@@ -99,7 +103,9 @@ export default function Modelo({ something }) {
         <h1 className="text-xl">Modelo</h1>
         <div className="w-full grid grid-cols-2 gap-x-2">
           <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">Nombre</span>
+            <span className="text-sm text-slate-600 p-0">
+              Nombre <span className="text-red-400">*</span>
+            </span>
             <textarea
               rows={5}
               className="w-full rounded-md p-2"
@@ -113,29 +119,29 @@ export default function Modelo({ something }) {
               onChange={(e) => {
                 const value = e.target?.value;
 
-                setname(value);
-
-                setCanCreate(validateInputFields(name, value));
+                setName(value);
+                setCanCreate(validateInputFields(value, year, marca));
               }}
             ></textarea>
           </div>
-          <div className="w-full py-1">
-            <span className="text-sm text-slate-600 p-0">Año</span>
-            <textarea
-              rows={5}
-              className="w-full rounded-md p-2"
-              placeholder="Opcionalmente, provea una descripcion adicional..."
-              style={{
-                resize: "none",
-              }}
+          <div className="w-full py-1 flex flex-col gap-2">
+            <span className="text-sm text-slate-600 p-0">
+              Año <span className="text-red-400">*</span>
+            </span>
+            <input
+              type="number"
+              min={1800}
+              max={9999}
               ref={yearRef}
               onChange={(e) => {
-                const value = e.target?.value;
+                const value = parseInt(e.target?.value);
 
-                setYear(value?.length ? value : null);
-                setCanCreate(validateInputFields(year, value));
+                setYear(value);
+                setCanCreate(
+                  validateInputFields(name, isNaN(value) ? 0 : value, marca)
+                );
               }}
-            ></textarea>
+            />
           </div>
           <div className="w-full py-1">
             <span className="text-sm text-slate-600 p-0">
@@ -160,7 +166,7 @@ export default function Modelo({ something }) {
                   const id = value?.value ?? null;
 
                   setMarca(id);
-                  setCanCreate(true);
+                  setCanCreate(validateInputFields(name, year, id));
                 }
 
                 // Pasar por parametro, ya que los estados no se actualizan hasta el fin de la ejecucion de la funcion anonima.

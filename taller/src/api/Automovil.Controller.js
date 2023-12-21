@@ -79,16 +79,16 @@ export async function eliminarAutomovil(id) {
  *
  * @returns {Promise<any>} El automovil editado.
  */
-export async function editarAutomovil(id) {
+export async function editarAutomovil(id, data) {
   try {
     // Editar primero la patente.
-    const { patente } = await axios({
+    const { data: automovil } = await axios({
       method: "PATCH",
       url: `${SpringBoot_Api}/automoviles/${id}`,
-      data: id,
+      data,
     });
 
-    return patente;
+    return automovil;
   } catch (e) {
     console.error(e);
     return null;

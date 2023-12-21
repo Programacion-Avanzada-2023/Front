@@ -365,6 +365,7 @@ export function ClienteTable({
                       <Button
                         type="submit"
                         variant="primary"
+                        disabled
                         onClick={() => {
                           setCliente({
                             ...cliente,

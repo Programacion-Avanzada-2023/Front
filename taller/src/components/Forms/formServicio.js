@@ -24,7 +24,7 @@ export default function Servicio({ something }) {
   const nameRef = useRef(name);
   const [descripciones, setDescripciones] = useState("");
   const descripcionesRef = useRef(descripciones);
-  const [precioUnitario, setPrecioUnitario] = useState("");
+  const [precioUnitario, setPrecioUnitario] = useState(0);
   const pUnitarioRef = useRef(precioUnitario);
 
   const [isLoading, setIsLoading] = useState("");
@@ -41,27 +41,27 @@ export default function Servicio({ something }) {
   };
   const handleServiceCreation = async () => {
     if (!name) return;
-  
+
     // Armar cuerpo requerido para creacion.
     const body = {
       name: name,
       descripcion: descripciones ?? null,
       precioUnitario: precioUnitario, // Incluir el precio unitario en el cuerpo del servicio
     };
-  
+
     setIsLoading(true);
     setCanCreate(false);
-  
+
     try {
       // Crear el nuevo servicio.
       const servicio = await crearServicio(body);
-  
+
       // Agregar el nuevo servicio a la lista de servicios.
       agregarServicio(servicio);
     } catch (e) {
       console.error(e);
     }
-  
+
     // Resettear estados de control de flujo.
     setIsLoading(false);
     setCanCreate(true);
@@ -99,7 +99,9 @@ export default function Servicio({ something }) {
               onChange={(e) => {
                 const value = e.target?.value;
                 setName(value);
-                setCanCreate(validateInputFields(value, descripciones));
+                setCanCreate(
+                  validateInputFields(value, descripciones, precioUnitario)
+                );
               }}
             />
           </div>
@@ -132,7 +134,7 @@ export default function Servicio({ something }) {
               onChange={(e) => {
                 const value = e.target?.value;
                 setDescripciones(value?.length ? value : null);
-                setCanCreate(validateInputFields(name, value));
+                setCanCreate(validateInputFields(name, value, precioUnitario));
               }}
             ></textarea>
           </div>

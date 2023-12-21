@@ -86,6 +86,8 @@ function FormCliente() {
 
     // Insertar el cliente.
     crearCliente(cliente).then((cliente) => {
+      console.log(cliente);
+
       setShowInsertAlert(true);
 
       setClientes([...clientes, cliente]);
@@ -188,9 +190,7 @@ function FormCliente() {
   const handleFiltroChange = () => {
     const filtroPorNombre = filtrarPorNombre();
 
-    const filtroFinal = filtrarPorFecha(
-      filtroPorNombre
-    );
+    const filtroFinal = filtrarPorFecha(filtroPorNombre);
 
     setClientesFiltrados(filtroFinal);
   };
@@ -261,8 +261,13 @@ function FormCliente() {
               onChange={(e) => {
                 const inputValue = e.target.value;
                 setDniTouched(true);
-                // Solo deja ingresar desde 1886 a 2023
-                const isValid = /^\d{7,8}$/.test(inputValue);
+
+                const isValid =
+                  /^\d{7,8}$/.test(inputValue) &&
+                  !clientes
+                    .map((c) => c.person.dni)
+                    .includes(parseInt(inputValue));
+
                 setDniValidated(isValid);
 
                 setDni(inputValue);
@@ -271,7 +276,7 @@ function FormCliente() {
 
             {/*Feedback para cuando el año es invalido*/}
             <Form.Control.Feedback type="invalid">
-              Por favor, ingrese un DNI valido.
+              Por favor, ingrese un DNI valido o no repetido.
             </Form.Control.Feedback>
           </Form.Group>
         </Row>

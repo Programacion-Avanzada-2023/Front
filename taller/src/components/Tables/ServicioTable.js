@@ -59,16 +59,18 @@ export default function ServicioTable({
     // Obtener el valor del textarea.
     const descripcion = orderEditDetailsRef.current.value;
 
+    // Actualizar la orden en la base de datos.
+    await editarServicio(servicioSeleccionado?.id, {
+      descripcion,
+    });
+
     // Actualizar la orden en el contexto.
     setServicios((prev) => {
-      // Buscar la orden original.
-      const servicio = prev.find((s) => s.id === servicioSeleccionado?.id);
+      const servicios = prev.filter(
+        (serv) => serv.id !== servicioSeleccionado.id
+      );
 
-      // Actualizar la orden con el resultado de la peticion.
-      servicio.descripcion = descripcion;
-
-      // Retornar el estado actualizado.
-      return prev;
+      return [...servicios, { ...servicioSeleccionado, descripcion }];
     });
   };
 
@@ -198,7 +200,7 @@ export default function ServicioTable({
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={4}>No hay servicios registrados.</td>
+              <td colSpan={5}>No hay servicios registrados.</td>
             </tr>
           )}
         </tbody>

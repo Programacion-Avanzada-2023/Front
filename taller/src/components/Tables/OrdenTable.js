@@ -599,7 +599,7 @@ export default function OrdenTable({
             })
           ) : (
             <tr className="text-center">
-              <td colSpan={6}>No hay ordenes de trabajo registradas.</td>
+              <td colSpan={8}>No hay ordenes de trabajo registradas.</td>
             </tr>
           )}
         </tbody>
