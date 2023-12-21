@@ -17,7 +17,7 @@ import AutomovilWrapper from "./components/Wrappers/AutomovilWrapper";
 import OrdenDeTrabajoWrapper from "./components/Wrappers/OrdenDeTrabajoWrapper";
 import { PerfilClienteWrapper } from "./components/Wrappers/Dynamic/PerfilClienteWrapper";
 import ReservaWrapper from "./components/Wrappers/ReservaWrapper";
-
+import { TecnicoContextProvider } from "./context/TecnicoContextProvider";
 
 function App() {
   return (
@@ -28,14 +28,21 @@ function App() {
 
         <div className="w-full">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                <TecnicoContextProvider>
+                  <Home />
+                </TecnicoContextProvider>
+              }
+            />
             <Route path="/marcas" element={<MarcaWrapper />} />
             <Route path="/modelos" element={<ModeloWrapper />} />
             <Route path="/automoviles" element={<AutomovilWrapper />} />
             <Route path="/clientes" element={<ClienteWrapper />} />
             <Route path="/ordenes" element={<OrdenDeTrabajoWrapper />} />
             <Route path="/servicios" element={<ServicioWrapper />} />
-            <Route path="/reservas" element={<ReservaWrapper/>}/>
+            <Route path="/reservas" element={<ReservaWrapper />} />
             <Route path="/home" element={<Navigate to="/" />} />
 
             {/** Rutas Dinámicas */}

@@ -5,7 +5,6 @@ import { crearCliente } from "../../api/Cliente.Controller";
 import { useOrdenContext } from "../../context/OrdenContextProvider";
 
 export default function Cliente({ something }) {
-
   /** Importar funcionalidad de ordenes de trabajo en el contexto. */
   const { clientes, setClientes, removerCliente, agregarCliente } =
     useClienteContext();
@@ -33,7 +32,15 @@ export default function Cliente({ something }) {
   /** Estado que habilita la creacion de una nueva orden. */
   const [canCreate, setCanCreate] = useState(false);
 
-  const validateInputFields = (name, surName, dni, street, streetNumber, phoneNumber, email) => {
+  const validateInputFields = (
+    name,
+    surName,
+    dni,
+    street,
+    streetNumber,
+    phoneNumber,
+    email
+  ) => {
     if (!name?.length) return false;
     if (!surName?.length) return false;
     if (!dni?.length) return false;
@@ -42,17 +49,33 @@ export default function Cliente({ something }) {
     if (!phoneNumber?.length) return false;
     if (!email?.length) return false;
 
-    return true; 
-    
+    return true;
   };
 
   /**
    * Administra el flujo de ejecucion para la creacion de una nueva orden de trabajo.
    */
   const handleOrderCreation = async () => {
-    if (!name || !surName || !dni || !street || !streetNumber || !phoneNumber || !email) return;
+    if (
+      !name ||
+      !surName ||
+      !dni ||
+      !street ||
+      !streetNumber ||
+      !phoneNumber ||
+      !email
+    )
+      return;
 
-    const isValidFields = validateInputFields(name, surName, dni, street, streetNumber, phoneNumber, email);
+    const isValidFields = validateInputFields(
+      name,
+      surName,
+      dni,
+      street,
+      streetNumber,
+      phoneNumber,
+      email
+    );
     // Armar cuerpo requerido para creacion.
     if (isValidFields) {
       const body = {
@@ -64,27 +87,27 @@ export default function Cliente({ something }) {
         phoneNumber: phoneNumber,
         email: email,
       };
-  
+
       setIsLoading(true);
       setCanCreate(false);
-  
+
       try {
         const cliente = await crearCliente(body);
         agregarCliente(cliente);
       } catch (e) {
         console.error(e);
       }
-  
+
       setIsLoading(false);
       clearFormFields();
     }
-  }
+  };
   /**
    * Limpia los campos del formulario.
    */
   const clearFormFields = () => {
     // Limpiar campos usando las referencias al DOM.
-    
+
     nameRef.current.value = "";
     surnameRef.current.value = "";
     dniRef.current.value = "";
@@ -165,14 +188,10 @@ export default function Cliente({ something }) {
   const handleFiltroChange = () => {
     const filtroPorNombre = filtrarPorNombre();
 
-    const filtroFinal = filtrarPorFecha(
-      filtroPorNombre
-    );
+    const filtroFinal = filtrarPorFecha(filtroPorNombre);
 
     setClientesFiltrados(filtroFinal);
   };
-
-
 
   return (
     <div className="grid grid-cols-2 gap-4 w-full mx-4">
@@ -188,13 +207,13 @@ export default function Cliente({ something }) {
               className="w-full rounded-md p-2"
               placeholder="Nombre"
               ref={nameRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setName(value);
+                setName(value);
 
-                    setCanCreate(validateInputFields(name, value));
-                }}
+                setCanCreate(validateInputFields(name, value));
+              }}
             />
           </div>
           <div className="w-full py-1">
@@ -206,13 +225,13 @@ export default function Cliente({ something }) {
               className="w-full rounded-md p-2"
               placeholder="Apellido"
               ref={surnameRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setSurName(value);
+                setSurName(value);
 
-                    setCanCreate(validateInputFields(surName, value));
-                }}
+                setCanCreate(validateInputFields(surName, value));
+              }}
             />
           </div>
           <div className="w-full py-1">
@@ -224,13 +243,13 @@ export default function Cliente({ something }) {
               className="w-full rounded-md p-2"
               placeholder="D.N.I."
               ref={dniRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setDni(value);
+                setDni(value);
 
-                    setCanCreate(validateInputFields(dni, value));
-                }}
+                setCanCreate(validateInputFields(dni, value));
+              }}
             />
           </div>
           <div className="w-full py-1">
@@ -242,13 +261,13 @@ export default function Cliente({ something }) {
               className="w-full rounded-md p-2"
               placeholder="+54 ..."
               ref={phoneNumberRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setPhoneNumber(value);
+                setPhoneNumber(value);
 
-                    setCanCreate(validateInputFields(phoneNumber, value));
-                }}
+                setCanCreate(validateInputFields(phoneNumber, value));
+              }}
             />
           </div>
           <div className="col-span-2 flex gap-x-2">
@@ -260,11 +279,11 @@ export default function Cliente({ something }) {
                 placeholder="Nombre de Calle"
                 ref={streetRef}
                 onChange={(e) => {
-                    const value = e.target?.value;
+                  const value = e.target?.value;
 
-                    setStreet(value);
+                  setStreet(value);
 
-                    setCanCreate(validateInputFields(street, value));
+                  setCanCreate(validateInputFields(street, value));
                 }}
               />
             </div>
@@ -276,11 +295,11 @@ export default function Cliente({ something }) {
                 placeholder="Altura de Calle"
                 ref={streetNumberRef}
                 onChange={(e) => {
-                    const value = e.target?.value;
+                  const value = e.target?.value;
 
-                    setStreetNumber(value);
+                  setStreetNumber(value);
 
-                    setCanCreate(validateInputFields(streetNumber, value));
+                  setCanCreate(validateInputFields(streetNumber, value));
                 }}
               />
             </div>
@@ -292,34 +311,69 @@ export default function Cliente({ something }) {
               className="w-full rounded-md p-2"
               placeholder="alguien@test.com"
               ref={emailRef}
-                onChange={(e) => {
-                    const value = e.target?.value;
+              onChange={(e) => {
+                const value = e.target?.value;
 
-                    setEmail(value);
+                setEmail(value);
 
-                    setCanCreate(validateInputFields(email, value));
-                }}
+                setCanCreate(validateInputFields(email, value));
+              }}
             />
           </div>
-        <div className="w-full grid grid-cols-3 gap-x-2">
-        <button
-          className={`w-full p-2 ${
-            name && surName && dni && street && streetNumber && phoneNumber && email && validateInputFields(name, surName, dni, street, streetNumber, phoneNumber, email) ? "bg-blue-500" : "bg-blue-300"
-          } rounded-xl text-white font-semibold col-span-2`}
-          disabled={!name || !surName || !dni || !street || !streetNumber || !phoneNumber || !email || !validateInputFields(name, surName, dni, street, streetNumber, phoneNumber, email)}
-          onClick={handleOrderCreation}
-        >
-          Crear Nueva
-        </button>
-        <button
-          className="w-full p-2 bg-orange-500 rounded-xl text-white font-semibold"
-          onClick={clearFormFields}
-        >
-          Limpiar Todo
-        </button>
-      </div>
+          <div className="w-full flex gap-2 col-span-3">
+            <button
+              className={`w-full p-2 ${
+                name &&
+                surName &&
+                dni &&
+                street &&
+                streetNumber &&
+                phoneNumber &&
+                email &&
+                validateInputFields(
+                  name,
+                  surName,
+                  dni,
+                  street,
+                  streetNumber,
+                  phoneNumber,
+                  email
+                )
+                  ? "bg-blue-500"
+                  : "bg-blue-300"
+              } rounded-xl text-white font-semibold col-span-2`}
+              disabled={
+                !name ||
+                !surName ||
+                !dni ||
+                !street ||
+                !streetNumber ||
+                !phoneNumber ||
+                !email ||
+                !validateInputFields(
+                  name,
+                  surName,
+                  dni,
+                  street,
+                  streetNumber,
+                  phoneNumber,
+                  email
+                )
+              }
+              onClick={handleOrderCreation}
+            >
+              Crear Nueva
+            </button>
+            <button
+              className="w-full p-2 bg-orange-500 rounded-xl text-white font-semibold"
+              onClick={clearFormFields}
+            >
+              Limpiar Todo
+            </button>
+          </div>
         </div>
-        <div className="w-[95%]">
+      </div>
+      <div className="w-[95%]">
         <ClienteTable
           clientes={clientes}
           removerCliente={removerCliente}
@@ -329,7 +383,6 @@ export default function Cliente({ something }) {
           handleFiltroChange={handleFiltroChange}
           setClientesFiltrados={setClientesFiltrados}
         />
-      </div>
       </div>
     </div>
   );

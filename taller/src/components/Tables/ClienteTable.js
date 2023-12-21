@@ -268,10 +268,10 @@ export function ClienteTable({
       />
 
       <button onClick={filtrarClientes}>Filtrar</button> */}
-      <div className="my-4 mx-auto p-4 w-max bg-white rounded-xl flex flex-col gap-2">
+      <div className="my-4 mx-auto p-4 w-full bg-white rounded-xl flex flex-col gap-2">
         <h2 className="text-xl font-semibold">Filtros</h2>
-        <div className="flex gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="flex gap-4 justify-between">
+          <div className="flex flex-col gap-2 w-full">
             <span className="text-slate-800">Nombre de Cliente</span>
             <input
               type="text"
@@ -282,7 +282,7 @@ export function ClienteTable({
               }}
             />
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full">
             <span className="text-slate-800">Fecha de Última Visita</span>
             <input
               type="date"
