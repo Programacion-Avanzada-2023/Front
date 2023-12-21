@@ -1,6 +1,11 @@
 # Taller Mecánico (Módulo Frontend)
 Desarrollo frontend del ABM del Taller Mecánico utilizando la tecnologia React
 
+Encargados del desarrollo:
+-Nicolas Mairone
+-Santiago Pedraza
+-Lucas Palacios
+=======
 ## Líderes de Proyecto
 - MAIRONE, Nicolás Nahuel
 - PEDRAZA, Santiago

@@ -2,6 +2,13 @@ body{
   background-repeat: no-repeat;
   background-size: cover;
   background-image: url("../public/img/taller_santosCustom.png");
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+}
+
+p {
+  margin: 0 !important;
 }
 
 .d-block {
@@ -9,3 +16,58 @@ body{
   height: 600px;
 }
 
+.div-buttons {
+  width: 70%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+}
+
+.custom-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* Para centrar el texto en dispositivos pequeños */
+}
+
+.custom-label{
+  font-weight: bold;
+  color: white;
+  
+}
+
+.Forms{
+  margin-left: 10px;
+}
+
+.custom-banner{
+  margin-right: 20px;
+  margin-left: 20px;
+  border-radius: 3% !important;
+  overflow: hidden;
+}
+
+.custom-carousel{
+  height: 500px;
+}
+
+.text-slide{
+  color:black;
+}
+
+.custom-alert {
+  position: absolute;
+  top: 10%; /* Cambia esta propiedad según sea necesario */
+  left: 50%; /* Para centrar horizontalmente la alerta */
+  transform: translateX(-50%); /* Para centrar horizontalmente la alerta */
+  width: 100%; /* Para que ocupe todo el ancho del contenedor padre */
+  text-align: center; /* Para centrar el texto en la alerta */
+}
+
+.form-control:valid{
+  border-color: rgb(15, 192, 15);
+}
+
+.form-select:valid{
+  border-color: rgb(15, 192, 15);
+}
